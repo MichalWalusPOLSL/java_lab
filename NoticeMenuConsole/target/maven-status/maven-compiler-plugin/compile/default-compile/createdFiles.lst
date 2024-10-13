@@ -1,0 +1,11 @@
+model\package-info.class
+com\mycompany\lab1prot\package-info.class
+view\package-info.class
+model\NoticeList.class
+view\PrintMenu.class
+controller\ControllProgramFlow.class
+model\MyThrownException.class
+com\mycompany\lab1prot\Lab1prot.class
+controller\package-info.class
+model\Notice.class
+model\User.class
