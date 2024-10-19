@@ -8,25 +8,28 @@ import java.util.InputMismatchException;
 
 
 /**
- * Controller handling exceptions and providing user with chosen options.
- * <p>
- * viewMenu object of PrintMenu, used to display text on screen
- * </p>
+ * Controller handling the main program flow, managing user input and interaction.
+ * This class communicates with the model to update or retrieve data and passes
+ * information to the view for displaying text on the screen.
+ *
  * @author Michal Walus
- * @version 1.0
+ * @version 1.2
  * @see PrintMenu
  */
 public class ControllProgramFlow {
     
-    PrintMenu viewMenu;
+    /** Object used to display text on the screen */
+    private PrintMenu viewMenu;
     
     /**
-     * Chcecks if username provided by user is correct (it has to be just one 
-     * argument from command line and needs to start with a letter)
-     * if the username is not valid, method will loop until all rules are followed.
-     * @param args arguments from command line (optional) program also works
-     * without them
-     * @param someUser object identifying user who is currently running application
+     * Validates the username provided by the user. The username must meet
+     * the requirement of being a single argument from the command line and
+     * starting with a letter. If the username is invalid, the method will 
+     * repeatedly prompt the user until a valid name is provided.
+     * 
+     * @param args Arguments from the command line (optional); the program works without them.
+     * @param someUser Object representing the user currently running the application.
+     * @see User
      */
     public void checkIfUsernameGood(String[] args, User someUser){
         
@@ -54,8 +57,10 @@ public class ControllProgramFlow {
     }
     
     /**
-     * Method, which goal is to read Integer provided by user. 
-     * @return returns Integer provided by user
+     * Reads an integer input from the user. Handles exceptions if the input 
+     * is not a valid integer, and prompts the user to enter the value again.
+     *
+     * @return The valid integer provided by the user.
      * @see User
      */
     public int getIntFromUser() {
@@ -77,8 +82,9 @@ public class ControllProgramFlow {
     }
     
     /**
-     * Method, which goal is to read String provided by user.
-     * @return returns String provided by user
+     * Reads a string input from the user.
+     *
+     * @return The string input provided by the user.
      * @see User
      */
     public String getStringFromUser() {
@@ -88,9 +94,10 @@ public class ControllProgramFlow {
     }
     
     /**
-     * Chcecks all notices that are currently in the system and transfers information
-     * to view, which puts them on a screen.
-     * @param notices object of NoticeList class with all notices in the system
+     * Displays all notices currently in the system. The notices are retrieved
+     * from the model, and the details are passed to the view for printing.
+     * 
+     * @param notices The object containing all notices in the system.
      * @see NoticeList
      */
     public void printAllNotices(NoticeList notices){
@@ -102,9 +109,12 @@ public class ControllProgramFlow {
     }
     
     /**
-     * Adds new notice to the system.
-     * @param notices object of NoticeList class with all notices in the system
-     * @param givenAuthor Nickname provided by user currently running the application
+     * Adds a new notice to the system. The user provides the title and text
+     * for the notice, and the author's nickname is automatically assigned 
+     * based on the username.
+     * 
+     * @param notices The object containing all notices in the system.
+     * @param givenAuthor The nickname provided by the user currently running the application.
      * @see NoticeList
      * @see User
      */
@@ -118,8 +128,10 @@ public class ControllProgramFlow {
     }
     
     /**
-     * Deletes one notice chosen by user.
-     * @param notices object of NoticeList class with all notices in the system
+     * Deletes a specific notice chosen by the user. The user selects the 
+     * notice from a list, and the notice is then removed from the system.
+     * 
+     * @param notices The object containing all notices in the system.
      * @see NoticeList
      */
     public void deleteNotice(NoticeList notices){
@@ -133,9 +145,11 @@ public class ControllProgramFlow {
             this.viewMenu.printBoundException();
         }
     }
+    
     /**
-     * Checks details of notice chosen by user.
-     * @param notices object of NoticeList class with all notices in the system
+     * Displays the details of a specific notice chosen by the user.
+     * 
+     * @param notices The object containing all notices in the system.
      * @see NoticeList
      */
     public void checkSpecificNotice(NoticeList notices){
@@ -151,14 +165,15 @@ public class ControllProgramFlow {
     }
     
     /**
-     * Creates new object with PrintMenu class field.
+     * Constructor that initializes the view menu object for interacting
+     * with the user.
      */
     public ControllProgramFlow(){
         this.viewMenu = new PrintMenu();
     }
     
     /**
-     * Allows to print all main menu options.
+     * Displays all options from the main menu.
      */
     public void printMainMenu(){
         this.viewMenu.printOptions();

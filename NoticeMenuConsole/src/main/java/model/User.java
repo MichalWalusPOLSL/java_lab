@@ -3,20 +3,21 @@ package model;
 
 /**
  * Class that characterises the user. It stores his username.
- * <p>
- * name is username (nickname of person currently runing the program)
- * </p>
+ * 
  * @author Michal Walus
  * @version 1.0
  */
 public class User {
-    String name;
+    
+    /** The username (nickname) of the user. */
+    private String name;
 
     /**
-     * Sets name to username provided by user in the command line or with the keyboard.
-     * @param name provided username
-     * @throws MyThrownException throws exception when username is empty or doesn't start with a letter.
-     * It can also appear when user doesn't pass anything.
+     * Sets the username provided by the user either via command line or keyboard input.
+     * 
+     * @param name The username provided by the user.
+     * @throws MyThrownException if the username is empty or does not start with a letter.
+     * It is also thrown when no argument is passed.
      */
     public void setName(String name) throws MyThrownException{
         
@@ -33,14 +34,12 @@ public class User {
     }
 
     /**
-     * Used to return username.
-     * @return username
+     * Returns the username of the user.
+     * 
+     * @return The username of the user.
      */
     public String getName() {
         return name;
     }
-    
-    
-    
     
 }

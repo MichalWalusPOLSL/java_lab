@@ -1,6 +1,11 @@
 
 /**
- * Controller is used to steer the whole program. It contacts with user, uses class
- * for printing on screen and returns information to Main method.
+ * This package contains the controller classes, responsible for managing the 
+ * flow of the application. The controller handles user input, interacts with 
+ * the model to retrieve or update data, and passes information to the view 
+ * for displaying output to the user.
+ * 
+ * @author Michal Walus
+ * @version 1.2
  */
 package controller;

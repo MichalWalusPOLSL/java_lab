@@ -10,13 +10,18 @@ import model.User;
      * Customer can run program from command line providing his username, if not 
      * application will ask him to enter it manually.
      * @author Michal Walus group 13, Monday 16:30-19:30
-     * @version 1.0
+     * @version 1.3
      */
 public class Lab1prot {
-    /**
-     * Allows user to choose action, that he wants to do.
-     * @param args[] username given by customer
-     */
+   /**
+    * The main method that starts the notice management program. 
+    * It checks if the username is provided via command-line arguments. 
+    * If not, the program will prompt the user to enter one manually. 
+    * The user can then interact with the program by selecting options 
+    * from the main menu.
+    * 
+    * @param args Command-line arguments; the first argument should be username
+    */
     public static void main(String[] args) {
         
         ControllProgramFlow controller = new ControllProgramFlow();
