@@ -41,7 +41,7 @@ public class AddNoticeScreenController {
             this.errorField.setText("Please provide all information above");
         }
         else {
-            System.out.println("correct data");
+            System.out.println("Title: " + titleField.getText() + " description: " + descriptionField.getText());
             this.errorField.setText("");
         }
     }
