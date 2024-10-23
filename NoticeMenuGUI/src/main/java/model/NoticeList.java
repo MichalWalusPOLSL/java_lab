@@ -2,13 +2,15 @@
 package model;
 
 import java.util.ArrayList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * This class represents a collection of notices stored in an ArrayList. 
  * It provides methods to add, retrieve, and delete notices from the list.
  * 
  * @author Michal Walus
- * @version 1.1
+ * @version 1.2
  * @see Notice
  */
 public class NoticeList {
@@ -62,6 +64,16 @@ public class NoticeList {
      */
     public int getSize(){
         return this.allNotice.size();
+    }
+    
+    /**
+     * Returns all the notices currently stored in the list.
+     * 
+     * @return A list of all notices as an ObservableList.
+     */
+    public ObservableList<Notice> getAllObservable() {
+        // Konwersja ArrayList na ObservableList
+        return FXCollections.observableArrayList(allNotice);
     }
     
     

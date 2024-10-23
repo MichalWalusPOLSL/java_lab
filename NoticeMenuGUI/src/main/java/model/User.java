@@ -5,12 +5,13 @@ package model;
  * Class that characterises the user. It stores his username.
  * 
  * @author Michal Walus
- * @version 1.0
+ * @version 1.1
  */
 public class User {
     
     /** The username (nickname) of the user. */
     private String name;
+    
 
     /**
      * Sets the username provided by the user either via command line or keyboard input.
@@ -22,7 +23,7 @@ public class User {
     public void setName(String name) throws MyThrownException{
         
         if(name.isEmpty()) {
-            throw new MyThrownException("You have to pass only one argument (your username)");
+            throw new MyThrownException("You have to pass your username");
         }
         
         else if (Character.isLetter(name.charAt(0))){

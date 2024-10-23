@@ -14,6 +14,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import model.MyThrownException;
+import model.NoticeList;
+import model.User;
 
 /**
  * FXML Controller class
@@ -28,21 +31,27 @@ public class LoginScreenController {
     private Button LoginButton;
     @FXML
     private Label ErrorLabel;
+    
+    private User user;
+    private NoticeList notices;
+    
+    
+    public LoginScreenController(User user, NoticeList notices){
+        this.user = user;
+        this.notices = notices;
+    }
 
     @FXML
     private void tryLoginToSystem(ActionEvent event) throws IOException {
         
         String password = this.PasswordField.getText();
         
-        if(password.isEmpty()){
-            this.ErrorLabel.setText("Please write your login");
+        try{
+            this.user.setName(password);
+            App.setRoot("TableScreen");
         }
-        else if (Character.isDigit(password.charAt(0))){
-            this.ErrorLabel.setText("Login has to start with a letter");
-        }
-        else {
-            System.out.println(password);
-            App.setRoot("ButtonScreen");
+        catch (MyThrownException e){
+            ErrorLabel.setText(e.getMessage());
         }
         
         

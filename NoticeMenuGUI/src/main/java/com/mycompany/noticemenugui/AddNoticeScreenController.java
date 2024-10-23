@@ -15,6 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import model.NoticeList;
+import model.User;
 /**
  * FXML Controller class
  *
@@ -34,21 +36,31 @@ public class AddNoticeScreenController {
     @FXML
     private Label errorField;
     
+    private User user;
+    private NoticeList notices;
+    
+    public AddNoticeScreenController(User user, NoticeList notices){
+        this.user = user;
+        this.notices = notices;
+    }
+    
+    
     
     @FXML
-    private void submitButtonClicked(ActionEvent event) {
+    private void submitButtonClicked(ActionEvent event) throws IOException {
         if(titleField.getText().isEmpty() || descriptionField.getText().isEmpty()){
             this.errorField.setText("Please provide all information above");
         }
         else {
-            System.out.println("Title: " + titleField.getText() + " description: " + descriptionField.getText());
             this.errorField.setText("");
+            this.notices.addNotice(this.titleField.getText(), this.user.getName(), this.descriptionField.getText());
+            App.setRoot("TableScreen");
         }
     }
     
     @FXML
     private void leaveButtonClicked(ActionEvent event) throws IOException{
-        App.setRoot("ButtonScreen");
+        App.setRoot("TableScreen");
     }
 
 }
