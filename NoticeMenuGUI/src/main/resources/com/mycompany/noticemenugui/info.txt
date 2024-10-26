@@ -1,0 +1,11 @@
+# Resources Directory
+
+This directory contains all the FXML files and other resources for the NoticeMenuGUI application.
+
+## FXML Files
+Each FXML file corresponds to a different screen in the application, including:
+- `LoginScreen.fxml` - The login screen layout.
+- `AddNoticeScreen.fxml` - The layout for adding new notices.
+- `TableScreen.fxml` - The main table layout displaying all notices.
+
+These files define the structure and components for each screen, with controllers in the `controller` package managing their behavior.

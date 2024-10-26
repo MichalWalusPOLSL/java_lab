@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
+
 package controller;
 
 import com.mycompany.noticemenugui.App;
@@ -79,8 +76,8 @@ public class AddNoticeScreenController {
             try {
                 App.setRoot("TableScreen");
             } catch (IOException e) {
-            this.errorField.setText("Failed to load the next screen. Please try again.");
-            e.printStackTrace();
+                this.errorField.setText("Failed to load the next screen. Please try again.");
+                e.printStackTrace();
             }
         }
     }
