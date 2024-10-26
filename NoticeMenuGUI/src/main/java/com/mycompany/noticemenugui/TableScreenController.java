@@ -131,20 +131,20 @@ public class TableScreenController {
     }
     
     private void handleRowSelectionChange(Notice selectedNotice) {
-        if(this.checkNoticeButton.isVisible() && this.deleteButton.isVisible()){
-            if (selectedNotice == null) {
-                deleteButton.setDisable(true);
-                checkNoticeButton.setDisable(true);
+    if (this.checkNoticeButton.isVisible() && this.deleteButton.isVisible()) {
+        if (selectedNotice == null) {
+            deleteButton.setDisable(true);
+            checkNoticeButton.setDisable(true);
+        } else {
+            checkNoticeButton.setDisable(false);
+            if ("admin".equals(user.getName()) || selectedNotice.getAuthor().equals(user.getName())) {
+                deleteButton.setDisable(false);
             } else {
-                checkNoticeButton.setDisable(false);
-                if (selectedNotice.getAuthor().equals(user.getName())) {
-                    deleteButton.setDisable(false); 
-                } else {
-                    deleteButton.setDisable(true);
-                }
+                deleteButton.setDisable(true);
             }
         }
     }
+}
 
     
     
