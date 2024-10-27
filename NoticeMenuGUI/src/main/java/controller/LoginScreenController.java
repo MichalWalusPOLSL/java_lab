@@ -12,6 +12,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import model.MyThrownException;
 import model.NoticeList;
 import model.User;
@@ -77,5 +79,19 @@ public class LoginScreenController {
         
         
     }
+    
+    /**
+     * Handles the key press event on the login screen.
+     * If the ENTER key is pressed, this method simulates a click on the login button,
+     * triggering the login attempt.
+     *
+     * @param event the key event triggered by pressing a key.
+     */
+    @FXML
+    private void handleKeyPressed(KeyEvent event) {
+    if (event.getCode() == KeyCode.ENTER) { 
+        this.LoginButton.fire();
+    }
+}
     
 }

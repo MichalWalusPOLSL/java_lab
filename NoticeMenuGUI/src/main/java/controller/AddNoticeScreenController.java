@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import model.NoticeList;
 import model.User;
 
@@ -58,6 +59,57 @@ public class AddNoticeScreenController {
         this.notices = notices;
     }
     
+    /**
+     * Initializes the controller by setting custom focus traversal and key handling
+     * for specific UI elements. Overrides the default behavior of the Tab key 
+     * to manually control the focus order between fields. Additionally, pressing
+     * the Enter key in text fields triggers the submit button's action.
+     *
+     * - Tab in `titleField` moves focus to `descriptionField`.
+     * - Enter in `titleField` triggers the submit button.
+     * - Tab in `descriptionField` moves focus to `submitButton`.
+     * - Enter in `descriptionField` also triggers the submit button.
+     * - Tab in `submitButton` moves focus to `leaveButton`.
+     * - Tab in `leaveButton` cycles focus back to `titleField`.
+     */
+    @FXML
+    public void initialize() {
+        titleField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                event.consume(); // Zatrzymuje domyślne zachowanie
+                descriptionField.requestFocus(); // Przenosi fokus do Description
+            }
+            else if (event.getCode() == KeyCode.ENTER){
+                submitButton.fire();
+            }
+        });
+
+        descriptionField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                event.consume();
+                submitButton.requestFocus(); // Przenosi fokus do Submit
+            }
+            else if (event.getCode() == KeyCode.ENTER){
+                submitButton.fire();
+            }
+        });
+
+        submitButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                event.consume();
+                leaveButton.requestFocus(); // Przenosi fokus do Leave
+            }
+        });
+
+        leaveButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                event.consume();
+                titleField.requestFocus(); // Powrót do Title
+            }
+        });
+    }
+
+
     /**
      * Handles the action when the submit button is clicked.
      * Validates the form inputs and adds a new notice to the list if valid.
