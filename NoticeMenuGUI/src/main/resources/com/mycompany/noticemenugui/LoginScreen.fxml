@@ -13,10 +13,10 @@
             <Font name="System Bold Italic" size="27.0" />
          </font>
       </Label>
-      <TextField fx:id="PasswordField" accessibleText="Login text field" layoutX="216.0" layoutY="157.0" onKeyPressed="#handleKeyPressed" />
+      <TextField fx:id="loginField" accessibleText="Login text field" layoutX="216.0" layoutY="157.0" onKeyPressed="#handleKeyPressed" />
       <Label layoutX="216.0" layoutY="140.0" prefHeight="17.0" prefWidth="44.0" text="Login:" />
-      <Button fx:id="LoginButton" accessibleText="Login Button" layoutX="230.0" layoutY="256.0" mnemonicParsing="false" onAction="#tryLoginToSystem" onKeyPressed="#handleKeyPressed" prefHeight="41.0" prefWidth="122.0" text="Login to system" />
-      <Label fx:id="ErrorLabel" alignment="CENTER" layoutX="80.0" layoutY="325.0" prefHeight="41.0" prefWidth="440.0" textFill="#d00000">
+      <Button fx:id="loginButton" accessibleText="Login Button" layoutX="230.0" layoutY="256.0" mnemonicParsing="false" onAction="#tryLoginToSystem" onKeyPressed="#handleKeyPressed" prefHeight="41.0" prefWidth="122.0" text="Login to system" />
+      <Label fx:id="errorLabel" alignment="CENTER" layoutX="80.0" layoutY="325.0" prefHeight="41.0" prefWidth="440.0" textFill="#d00000">
          <font>
             <Font size="14.0" />
          </font>

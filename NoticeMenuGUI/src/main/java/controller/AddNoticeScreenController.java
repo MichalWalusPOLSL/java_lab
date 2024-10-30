@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import model.NoticeList;
 import model.User;
@@ -60,24 +61,43 @@ public class AddNoticeScreenController {
     }
     
     /**
-     * Initializes the controller by setting custom focus traversal and key handling
-     * for specific UI elements. Overrides the default behavior of the Tab key 
-     * to manually control the focus order between fields. Additionally, pressing
-     * the Enter key in text fields triggers the submit button's action.
-     *
-     * - Tab in `titleField` moves focus to `descriptionField`.
-     * - Enter in `titleField` triggers the submit button.
-     * - Tab in `descriptionField` moves focus to `submitButton`.
-     * - Enter in `descriptionField` also triggers the submit button.
-     * - Tab in `submitButton` moves focus to `leaveButton`.
-     * - Tab in `leaveButton` cycles focus back to `titleField`.
+     * Initializes the controller by setting tooltips and keyboard navigation for the UI components.
+     * This method is automatically called after the FXML view is loaded.
+     * 
+     * Tooltips:
+     * - Assigns a tooltip to each UI element to guide the user:
+     *   - `titleField`: "Put title of your notice here"
+     *   - `descriptionField`: "Put description of your notice here"
+     *   - `submitButton`: "Submit your notice"
+     *   - `leaveButton`: "Back to all notices"
+     * 
+     * Keyboard Navigation:
+     * - Customizes `Tab` and `Enter` key behavior for seamless keyboard navigation:
+     *   - Pressing `Tab` in `titleField` moves focus to `descriptionField`.
+     *   - Pressing `Enter` in `titleField` or `descriptionField` activates `submitButton`.
+     *   - Pressing `Tab` in `descriptionField` moves focus to `submitButton`.
+     *   - Pressing `Tab` in `submitButton` moves focus to `leaveButton`.
+     *   - Pressing `Tab` in `leaveButton` cycles focus back to `titleField`.
      */
     @FXML
-    public void initialize() {
+    private void initialize() {
+        Tooltip titleTooltip = new Tooltip("Put title of your notice here");
+        titleField.setTooltip(titleTooltip);
+        
+        Tooltip descTooltip = new Tooltip("Put description of your notice here");
+        descriptionField.setTooltip(descTooltip);
+        
+        Tooltip subtooltip = new Tooltip("Submit your notice");
+        submitButton.setTooltip(subtooltip);
+        
+        Tooltip leavetooltip = new Tooltip("Back to all notices");
+        leaveButton.setTooltip(leavetooltip);
+        
+        
         titleField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
-                event.consume(); // Zatrzymuje domyślne zachowanie
-                descriptionField.requestFocus(); // Przenosi fokus do Description
+                event.consume(); 
+                descriptionField.requestFocus(); 
             }
             else if (event.getCode() == KeyCode.ENTER){
                 submitButton.fire();
@@ -87,7 +107,7 @@ public class AddNoticeScreenController {
         descriptionField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
                 event.consume();
-                submitButton.requestFocus(); // Przenosi fokus do Submit
+                submitButton.requestFocus(); 
             }
             else if (event.getCode() == KeyCode.ENTER){
                 submitButton.fire();
@@ -97,14 +117,14 @@ public class AddNoticeScreenController {
         submitButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
                 event.consume();
-                leaveButton.requestFocus(); // Przenosi fokus do Leave
+                leaveButton.requestFocus(); 
             }
         });
 
         leaveButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
                 event.consume();
-                titleField.requestFocus(); // Powrót do Title
+                titleField.requestFocus(); 
             }
         });
     }

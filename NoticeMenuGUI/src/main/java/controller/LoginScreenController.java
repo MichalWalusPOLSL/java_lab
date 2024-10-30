@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import model.MyThrownException;
@@ -28,19 +29,34 @@ import model.User;
  */
 public class LoginScreenController {
     
-    /** Text field for entering the user's password. */
+    /** Text field for entering the user's login. */
     @FXML
-    private TextField PasswordField;
+    private TextField loginField;
     /** Button to attempt logging in. */
     @FXML
-    private Button LoginButton;
+    private Button loginButton;
     /** Label to display error messages related to login attempts. */
     @FXML
-    private Label ErrorLabel;
+    private Label errorLabel;
     /** The current user attempting to log in. */
     private User user;
     /** The main list of notices for the application. */
     private NoticeList notices;
+    
+    /**
+     * Initializes the controller by setting tooltips for UI elements.
+     * This method is automatically called after the FXML view is loaded.
+     * 
+     * The login button is assigned a tooltip that instructs the user to press it to log in.
+     * The login field (text field) is assigned a tooltip that prompts the user to enter their login information.
+     */
+    @FXML
+    private void initialize() {
+        Tooltip loginTooltip = new Tooltip("Press here to login");
+        loginButton.setTooltip(loginTooltip);
+        Tooltip textTooltip = new Tooltip("Put your login here");
+        loginField.setTooltip(textTooltip);
+    }
     
     /**
      * Constructs a new LoginScreenController with the provided user and notice list.
@@ -64,17 +80,17 @@ public class LoginScreenController {
     @FXML
     private void tryLoginToSystem(ActionEvent event) {
         
-        String password = this.PasswordField.getText();
+        String password = this.loginField.getText();
         
         try{
             this.user.setName(password);
             App.setRoot("TableScreen");
         }
         catch (MyThrownException e){
-            ErrorLabel.setText(e.getMessage());
+            errorLabel.setText(e.getMessage());
         }
         catch (IOException ee){
-            ErrorLabel.setText("Failed to load the next screen. Please try again.");
+            errorLabel.setText("Failed to load the next screen. Please try again.");
         }
         
         
@@ -90,7 +106,7 @@ public class LoginScreenController {
     @FXML
     private void handleKeyPressed(KeyEvent event) {
     if (event.getCode() == KeyCode.ENTER) { 
-        this.LoginButton.fire();
+        this.loginButton.fire();
     }
 }
     

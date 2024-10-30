@@ -15,6 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Notice;
 import model.NoticeList;
@@ -76,10 +77,36 @@ public class TableScreenController {
     
     /**
      * Initializes the TableScreen by setting up the table columns, populating 
-     * the notice list, and configuring button actions and row selection listeners.
+     * the list of notices, and configuring button actions and row selection listeners.
+     * 
+     * This method:
+     * - Sets tooltips for each main UI component to guide the user.
+     * - Configures table columns to display notice titles and authors.
+     * - Populates the table with an observable list of notices.
+     * - Sets actions for buttons, such as deleting a notice and checking details.
+     * - Disables buttons and hides the description area by default.
+     * - Adds a listener to handle changes in the selected table row.
      */
     @FXML
-    public void initialize() {
+    private void initialize() {
+        Tooltip tableTooltip = new Tooltip("Displays the list of notices");
+        noticesTable.setTooltip(tableTooltip);
+
+        Tooltip addNoticeTooltip = new Tooltip("Navigate to the screen to add a new notice");
+        addNoticeButton.setTooltip(addNoticeTooltip);
+
+        Tooltip deleteTooltip = new Tooltip("Delete the selected notice from the list");
+        deleteButton.setTooltip(deleteTooltip);
+
+        Tooltip checkNoticeTooltip = new Tooltip("View details of the selected notice");
+        checkNoticeButton.setTooltip(checkNoticeTooltip);
+
+        Tooltip leaveTooltip = new Tooltip("Log out and leave the current screen");
+        leaveButton.setTooltip(leaveTooltip);
+
+        Tooltip descriptionTooltip = new Tooltip("Description of the selected notice");
+        descriptionTextArea.setTooltip(descriptionTooltip);
+        
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
         noticesTable.setItems(notices.getAllObservable());
