@@ -47,17 +47,24 @@ public class AddNoticeScreenController {
     private User user;
     /** The main list of notices where the new notice will be added. */
     private NoticeList notices;
+    /** 
+     * Reference to the main application instance, used for managing scene transitions.
+     * This allows the controller to request navigation to different screens within the application.
+     */
+    private App app;
     
     
     /**
-     * Constructs a new {@code AddNoticeScreenController} with the given user and notices list.
+     * Constructs a new {@code AddNoticeScreenController} with the given user, notices list, and app instance.
      *
      * @param user the current user adding the notice.
      * @param notices the list of notices to which the new notice will be added.
+     * @param app the main application instance, used for navigation between scenes.
      */
-    public AddNoticeScreenController(User user, NoticeList notices){
+    public AddNoticeScreenController(User user, NoticeList notices, App app){
         this.user = user;
         this.notices = notices;
+        this.app = app;
     }
     
     /**
@@ -139,14 +146,14 @@ public class AddNoticeScreenController {
      */
     @FXML
     private void submitButtonClicked(ActionEvent event) {
-        if(titleField.getText().isEmpty() || descriptionField.getText().isEmpty()){
+        if(titleField.getText().isBlank() || descriptionField.getText().isBlank()){
             this.errorField.setText("Please provide all information above");
         }
         else {
             this.errorField.setText("");
             this.notices.addNotice(this.titleField.getText(), this.user.getName(), this.descriptionField.getText());
             try {
-                App.setRoot("TableScreen");
+                app.setRoot("TableScreen");
             } catch (IOException e) {
                 this.errorField.setText("Failed to load the next screen. Please try again.");
                 e.printStackTrace();
@@ -164,7 +171,7 @@ public class AddNoticeScreenController {
     @FXML
     private void leaveButtonClicked(ActionEvent event) {
         try {
-                App.setRoot("TableScreen");
+                app.setRoot("TableScreen");
             } catch (IOException e) {
                 this.errorField.setText("Failed to load the next screen. Please try again.");
                 e.printStackTrace();

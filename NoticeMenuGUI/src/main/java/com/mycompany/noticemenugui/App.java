@@ -5,13 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.io.IOException;
 import model.NoticeList;
 import model.User;
-import model.MyThrownException;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-
 
 /**
  * Main application class for the NoticeMenuGUI JavaFX application.
@@ -23,26 +21,13 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class App extends Application {
 
-    /**
-     * The main Scene for the application.
-     * This scene is shared and reused throughout the application's lifecycle,
-     * allowing different FXML views to be loaded dynamically as the root node.
-     */
-    private static Scene scene;
-    /**
-     * Stores the main list of notices (announcements) added to the program.
-     * Each notice includes important information such as the title, content,
-     * and the user who created it. This list is shared across the application
-     * to provide a centralized source of notice data.
-     */
-    private static NoticeList notices;
-    /**
-     * Represents the current user of the application.
-     * This user instance stores essential details about the user,
-     * primarily their username, and is used to track user-specific actions.
-     */
-    private static User user;
-    
+    /** The main Scene for the application. */
+    private Scene scene;
+    /** Stores the main list of notices (announcements) added to the program. */
+    private NoticeList notices;
+    /** Represents the current user of the application. */
+    private User user;
+
     /**
      * The main entry point for all JavaFX applications. 
      * This method initializes the primary Stage and loads the initial scene.
@@ -54,21 +39,20 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         this.notices = new NoticeList();
         this.user = new User();
-        scene = new Scene(loadFXML("LoginScreen"), 640, 480);
+        this.scene = new Scene(loadFXML("LoginScreen"), 640, 480);
         stage.setScene(scene);
         stage.show();
     }
-    
+
     /**
      * Changes the root of the current scene to the specified FXML file.
      *
      * @param fxml the name of the FXML file (without the ".fxml" extension) to load.
      * @throws IOException if the FXML file cannot be loaded.
      */
-    public static void setRoot(String fxml) throws IOException {
+    public void setRoot(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> createControllerInstance(controllerClass));
-
         Parent root = fxmlLoader.load();
         scene.setRoot(root);
     }
@@ -80,12 +64,12 @@ public class App extends Application {
      * @return the root Parent node of the loaded FXML file.
      * @throws IOException if the FXML file cannot be loaded.
      */
-    private static Parent loadFXML(String fxml) throws IOException {
+    private Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> createControllerInstance(controllerClass));
         return fxmlLoader.load();
     }
-    
+
     /**
      * Creates an instance of the specified controller class using reflection.
      * The controller class is expected to have a constructor that accepts 
@@ -94,11 +78,10 @@ public class App extends Application {
      * @param controllerClass the class of the controller to be instantiated.
      * @return a new instance of the controller, or null if instantiation fails.
      */
-    
-    private static Object createControllerInstance(Class<?> controllerClass) {
+    private Object createControllerInstance(Class<?> controllerClass) {
         try {
-            Constructor<?> constructor = controllerClass.getConstructor(User.class, NoticeList.class);
-            return constructor.newInstance(user, notices);
+            Constructor<?> constructor = controllerClass.getConstructor(User.class, NoticeList.class, App.class);
+            return constructor.newInstance(user, notices, this);  // Przekazujemy również instancję App
         } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             System.out.println(e.toString());
         } 

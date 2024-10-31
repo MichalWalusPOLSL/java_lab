@@ -62,6 +62,11 @@ public class TableScreenController {
     private User user;
     /** The main list of notices available in the application. */
     private NoticeList notices;
+    /** 
+     * Reference to the main application instance, used for managing scene transitions.
+     * This allows the controller to request navigation to different screens within the application.
+     */
+    private App app;
     
     
     /**
@@ -70,9 +75,10 @@ public class TableScreenController {
      * @param user the current user interacting with the notice table.
      * @param notices the list of notices displayed in the table.
      */
-    public TableScreenController(User user, NoticeList notices){
+    public TableScreenController(User user, NoticeList notices, App app){
         this.user = user;
         this.notices = notices;
+        this.app = app;
     }
     
     /**
@@ -130,7 +136,7 @@ public class TableScreenController {
     @FXML
     private void addNoticeButtonClicked(ActionEvent event) {
         try {
-                App.setRoot("AddNoticeScreen");
+                app.setRoot("AddNoticeScreen");
             } catch (IOException e) {
                 this.errorLabel.setText("Failed to load the next screen. Please try again.");
                 e.printStackTrace();
@@ -202,7 +208,7 @@ public class TableScreenController {
     @FXML
     private void leaveButtonClicked(ActionEvent event) {
         try {
-                App.setRoot("LoginScreen");
+                app.setRoot("LoginScreen");
             } catch (IOException e) {
                 this.errorLabel.setText("Failed to load the next screen. Please try again.");
                 e.printStackTrace();

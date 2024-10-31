@@ -42,6 +42,11 @@ public class LoginScreenController {
     private User user;
     /** The main list of notices for the application. */
     private NoticeList notices;
+    /** 
+     * Reference to the main application instance, used for managing scene transitions.
+     * This allows the controller to request navigation to different screens within the application.
+     */
+    private App app;
     
     /**
      * Initializes the controller by setting tooltips for UI elements.
@@ -64,9 +69,10 @@ public class LoginScreenController {
      * @param user the current user attempting to log in.
      * @param notices the list of notices available in the application.
      */
-    public LoginScreenController(User user, NoticeList notices){
+    public LoginScreenController(User user, NoticeList notices, App app){
         this.user = user;
         this.notices = notices;
+        this.app = app;
     }
     
     
@@ -84,7 +90,7 @@ public class LoginScreenController {
         
         try{
             this.user.setName(password);
-            App.setRoot("TableScreen");
+            app.setRoot("TableScreen");
         }
         catch (MyThrownException e){
             errorLabel.setText(e.getMessage());
