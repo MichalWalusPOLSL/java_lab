@@ -3,13 +3,8 @@ package controller;
 
 import com.mycompany.noticemenugui.App;
 import java.io.IOException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Label;
@@ -20,6 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.Notice;
 import model.NoticeList;
 import model.User;
+
 /**
  * Controller for the "Table Screen".
  * Manages user interactions with the notice table, including viewing, adding, deleting, 
