@@ -8,7 +8,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -55,7 +54,7 @@ public class AddNoticeScreenController {
     
     
     /**
-     * Constructs a new {@code AddNoticeScreenController} with the given user, notices list, and app instance.
+     * Constructs a new AddNoticeScreenController with the given user, notices list, and app instance.
      *
      * @param user the current user adding the notice.
      * @param notices the list of notices to which the new notice will be added.

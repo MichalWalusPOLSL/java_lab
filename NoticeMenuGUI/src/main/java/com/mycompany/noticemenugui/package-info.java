@@ -10,5 +10,8 @@
  * This package may also include additional resources related to the setup 
  * and configuration of the application, as well as shared utilities 
  * necessary for managing the application's state.
+ * 
+ * @author Michal Walus
+ * @version 1.1
  */
 package com.mycompany.noticemenugui;

@@ -73,7 +73,7 @@ public class App extends Application {
     /**
      * Creates an instance of the specified controller class using reflection.
      * The controller class is expected to have a constructor that accepts 
-     * a {@link User} and a {@link NoticeList} as parameters.
+     * a User and a NoticeList as parameters.
      *
      * @param controllerClass the class of the controller to be instantiated.
      * @return a new instance of the controller, or null if instantiation fails.
