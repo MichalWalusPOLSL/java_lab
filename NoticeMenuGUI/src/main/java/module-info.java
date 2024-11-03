@@ -7,4 +7,6 @@ module com.mycompany.noticemenugui {
     opens controller to javafx.fxml;
     opens model to javafx.base;
     exports com.mycompany.noticemenugui;
+    exports controller;
+    exports model;
 }
