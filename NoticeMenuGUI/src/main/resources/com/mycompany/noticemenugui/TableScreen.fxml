@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -31,5 +32,6 @@
           <TableColumn fx:id="authorColumn" editable="false" prefWidth="123.0" sortable="false" text="Author" />
         </columns>
       </TableView>
+      <CheckBox fx:id="myNoticesCheckBox" accessibleText="show only your notcies" layoutX="495.0" layoutY="296.0" mnemonicParsing="false" text="my notices" />
    </children>
 </AnchorPane>

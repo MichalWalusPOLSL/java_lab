@@ -3,9 +3,14 @@ package controller;
 
 import com.mycompany.noticemenugui.App;
 import java.io.IOException;
+import java.util.Map;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -54,6 +59,9 @@ public class TableScreenController {
     /** Column in the table for displaying the author of each notice. */
     @FXML
     private TableColumn<Notice, String> authorColumn;
+    /** CheckBox to filter and display only the user's own notices. */
+    @FXML
+    private CheckBox myNoticesCheckBox;
     /** The current user viewing or managing the notices. */
     private User user;
     /** The main list of notices available in the application. */
@@ -91,26 +99,21 @@ public class TableScreenController {
      */
     @FXML
     private void initialize() {
-        Tooltip tableTooltip = new Tooltip("Displays the list of notices");
-        noticesTable.setTooltip(tableTooltip);
+        Map<Control, String> tooltips = Map.of(
+            noticesTable, "Displays the list of notices",
+            addNoticeButton, "Navigate to the screen to add a new notice",
+            deleteButton, "Delete the selected notice from the list",
+            checkNoticeButton, "View details of the selected notice",
+            leaveButton, "Log out and leave the current screen",
+            descriptionTextArea, "Description of the selected notice",
+            myNoticesCheckBox, "Show only your notices"
+        );
 
-        Tooltip addNoticeTooltip = new Tooltip("Navigate to the screen to add a new notice");
-        addNoticeButton.setTooltip(addNoticeTooltip);
-
-        Tooltip deleteTooltip = new Tooltip("Delete the selected notice from the list");
-        deleteButton.setTooltip(deleteTooltip);
-
-        Tooltip checkNoticeTooltip = new Tooltip("View details of the selected notice");
-        checkNoticeButton.setTooltip(checkNoticeTooltip);
-
-        Tooltip leaveTooltip = new Tooltip("Log out and leave the current screen");
-        leaveButton.setTooltip(leaveTooltip);
-
-        Tooltip descriptionTooltip = new Tooltip("Description of the selected notice");
-        descriptionTextArea.setTooltip(descriptionTooltip);
+        tooltips.forEach((control, tip) -> control.setTooltip(new Tooltip(tip)));
         
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
+        populateNoticesTable();
         noticesTable.setItems(notices.getAllObservable());
         deleteButton.setOnAction(event -> deleteButtonClicked(event));
         deleteButton.setDisable(true);
@@ -120,7 +123,7 @@ public class TableScreenController {
         noticesTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> handleRowSelectionChange(newValue)
         );
-
+        myNoticesCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> populateNoticesTable());
     }
     
     /**
@@ -146,54 +149,60 @@ public class TableScreenController {
      * @param event the event triggered by clicking the "Delete" button.
      */
     @FXML
-    private void deleteButtonClicked(ActionEvent event) {
-        int index = noticesTable.getSelectionModel().getSelectedIndex();
-        
-        if(index >= 0){
-            this.errorLabel.setText("");
-            this.notices.deleteOne(index);
-            noticesTable.setItems(notices.getAllObservable());
-        }
-        else {
-            this.errorLabel.setText("Please select the notice that you want to delete");
-        }
-        
+private void deleteButtonClicked(ActionEvent event) {
+    Notice selectedNotice = noticesTable.getSelectionModel().getSelectedItem();
+    
+    if (selectedNotice != null) {
+        this.errorLabel.setText("");
+
+        this.notices.deleteOne(selectedNotice);
+
+        populateNoticesTable();
+    } else {
+        this.errorLabel.setText("Please select the notice that you want to delete");
     }
+}
     
     /**
      * Handles the action when the "Check Notice" button is clicked.
-     * Displays the details of the selected notice or returns to the notice list view.
+     * Toggles between the table view and the detailed view of a selected notice.
+     * If switching to the detailed view, it displays the content of the selected notice.
      *
      * @param event the event triggered by clicking the "Check Notice" button.
      */
     @FXML
     private void checkNoticeButtonClicked(ActionEvent event) {
-        if(this.noticesTable.isVisible() == true){
-            if(noticesTable.getSelectionModel().getSelectedItem() == null){
-                
-            }
-            else{
-                this.noticesTable.setVisible(false);
-                this.descriptionTextArea.setText(noticesTable.getSelectionModel().getSelectedItem().getText());
-                this.descriptionTextArea.setVisible(true);
-                this.deleteButton.setVisible(false);
-                this.addNoticeButton.setVisible(false);
-                this.errorLabel.setVisible(false);
-                this.leaveButton.setVisible(false);
-                this.checkNoticeButton.setText("Back");
-            }
-        }
-        else {
-                this.noticesTable.setVisible(true);
-                this.descriptionTextArea.setVisible(false);
-                this.deleteButton.setVisible(true);
-                this.addNoticeButton.setVisible(true);
-                this.errorLabel.setVisible(true);
-                this.errorLabel.setText("");
-                this.leaveButton.setVisible(true);
-                this.checkNoticeButton.setText("Check Notice");
+        boolean isTableVisible = noticesTable.isVisible();
+        setVisibility(!isTableVisible);
+        checkNoticeButton.setText(isTableVisible ? "Back" : "Check Notice");
+
+        if (isTableVisible && noticesTable.getSelectionModel().getSelectedItem() != null) {
+            descriptionTextArea.setText(noticesTable.getSelectionModel().getSelectedItem().getText());
         }
     }
+
+    /**
+     * Sets the visibility of various UI elements based on whether the table or
+     * the detailed notice view should be displayed. When showing the table, all
+     * buttons and options related to the main notice list are visible. When showing
+     * the detailed view, only the notice content and the "Back" button are visible.
+     *
+     * @param showTable true if the table should be visible, false to show the detailed view.
+     */
+    private void setVisibility(boolean showTable) {
+        noticesTable.setVisible(showTable);
+        descriptionTextArea.setVisible(!showTable);
+        deleteButton.setVisible(showTable);
+        addNoticeButton.setVisible(showTable);
+        errorLabel.setVisible(showTable);
+        leaveButton.setVisible(showTable);
+        myNoticesCheckBox.setVisible(showTable);
+
+        if (showTable) {
+            errorLabel.setText("");
+        }
+    }
+
     
     /**
      * Handles the action when the "Leave" button is clicked.
@@ -231,6 +240,16 @@ public class TableScreenController {
                 deleteButton.setDisable(true);
             }
         }
+    }
+}
+    /**
+     * If myNoticeCheckbox is selected, it will show only notices of the current user.
+     */
+    private void populateNoticesTable() {
+    if (myNoticesCheckBox.isSelected()) {
+        noticesTable.setItems(FXCollections.observableArrayList(notices.getNoticesByUser(user.getName())));
+    } else {
+        noticesTable.setItems(notices.getAllObservable());
     }
 }
 

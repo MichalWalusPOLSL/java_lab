@@ -2,6 +2,8 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -10,7 +12,7 @@ import javafx.collections.ObservableList;
  * It provides methods to add, retrieve, and delete notices from the list.
  * 
  * @author Michal Walus
- * @version 1.2
+ * @version 1.3
  * @see Notice
  */
 public class NoticeList {
@@ -49,12 +51,12 @@ public class NoticeList {
     }
     
     /**
-     * Deletes a specific notice based on its position in the list.
+     * Deletes a specific notice from the list.
      * 
-     * @param i The index of the notice to be deleted.
+     * @param notice The notice to be deleted.
      */
-    public void deleteOne(int i){
-        this.allNotice.remove(i);
+    public void deleteOne(Notice notice) {
+        this.allNotice.remove(notice); 
     }
     
     /**
@@ -67,15 +69,38 @@ public class NoticeList {
     }
     
     /**
-     * Returns all the notices currently stored in the list.
+     * Returns all the notices currently stored in the list as ObservableList.
      * 
      * @return A list of all notices as an ObservableList.
      */
     public ObservableList<Notice> getAllObservable() {
-        // Konwersja ArrayList na ObservableList
         return FXCollections.observableArrayList(allNotice);
     }
     
+    /**
+     * Returns all notices currently stored in the list as ArrayList
+     * 
+     * @return all notices in ArrayList format
+     */
+    public ArrayList<Notice> getAllNotices() {
+        return new ArrayList<>(allNotice); 
+    }
     
+    /**
+     * Returns all notices currently stored in the list for given user
+     * 
+     * @param username id of user we want to find notices for
+     * @return notices of the given user
+     */
+    public List<Notice> getNoticesByUser(String username) {
+        return this.getAllNotices().stream()
+            .filter(notice -> notice.getAuthor().equals(username))
+            .collect(Collectors.toList());
+    }
+
     
 }
+    
+    
+    
+

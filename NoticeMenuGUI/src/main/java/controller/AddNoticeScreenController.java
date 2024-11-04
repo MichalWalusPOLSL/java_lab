@@ -3,9 +3,11 @@ package controller;
 
 import com.mycompany.noticemenugui.App;
 import java.io.IOException;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
@@ -84,17 +86,14 @@ public class AddNoticeScreenController {
      */
     @FXML
     private void initialize() {
-        Tooltip titleTooltip = new Tooltip("Put title of your notice here");
-        titleField.setTooltip(titleTooltip);
-        
-        Tooltip descTooltip = new Tooltip("Put description of your notice here");
-        descriptionField.setTooltip(descTooltip);
-        
-        Tooltip subtooltip = new Tooltip("Submit your notice");
-        submitButton.setTooltip(subtooltip);
-        
-        Tooltip leavetooltip = new Tooltip("Back to all notices");
-        leaveButton.setTooltip(leavetooltip);
+        Map<Control, String> tooltips = Map.of(
+        titleField, "Put title of your notice here",
+        descriptionField, "Put description of your notice here",
+        submitButton, "Submit your notice",
+        leaveButton, "Back to all notices"
+    );
+
+    tooltips.forEach((control, tip) -> control.setTooltip(new Tooltip(tip)));
         
         
         titleField.setOnKeyPressed(event -> {

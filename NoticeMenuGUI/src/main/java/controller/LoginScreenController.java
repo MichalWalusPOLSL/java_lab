@@ -4,9 +4,11 @@ package controller;
 
 import com.mycompany.noticemenugui.App;
 import java.io.IOException;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -54,10 +56,12 @@ public class LoginScreenController {
      */
     @FXML
     private void initialize() {
-        Tooltip loginTooltip = new Tooltip("Press here to login");
-        loginButton.setTooltip(loginTooltip);
-        Tooltip textTooltip = new Tooltip("Put your login here");
-        loginField.setTooltip(textTooltip);
+        Map<Control, String> tooltips = Map.of(
+        loginButton, "Press here to login",
+        loginField, "Put your login here"
+    );
+
+    tooltips.forEach((control, tip) -> control.setTooltip(new Tooltip(tip)));
     }
     
     /**
