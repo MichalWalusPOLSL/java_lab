@@ -9,4 +9,5 @@ module com.mycompany.noticemenugui {
     exports com.mycompany.noticemenugui;
     exports controller;
     exports model;
+    requires lombok;
 }

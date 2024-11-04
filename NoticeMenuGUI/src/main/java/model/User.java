@@ -1,5 +1,6 @@
 
 package model;
+import lombok.Getter;
 
 /**
  * Class that characterises the user. It stores his username.
@@ -7,6 +8,8 @@ package model;
  * @author Michal Walus
  * @version 1.1
  */
+
+@Getter
 public class User {
     
     /** The username (nickname) of the user. */
@@ -34,13 +37,6 @@ public class User {
         }
     }
 
-    /**
-     * Returns the username of the user.
-     * 
-     * @return The username of the user.
-     */
-    public String getName() {
-        return name;
-    }
+    
     
 }
