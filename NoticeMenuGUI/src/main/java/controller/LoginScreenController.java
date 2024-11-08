@@ -24,7 +24,7 @@ import model.User;
  * and error handling for incorrect login information.
  * 
  * @author Michal Walus
- * @version 1.2
+ * @version 1.3
  */
 public class LoginScreenController {
     

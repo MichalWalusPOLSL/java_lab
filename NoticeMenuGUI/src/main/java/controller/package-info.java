@@ -14,6 +14,6 @@
  * classes for managing application state and providing data to the views.
  * 
  * @author Michal Walus
- * @version 1.1
+ * @version 1.2
  */
 package controller;

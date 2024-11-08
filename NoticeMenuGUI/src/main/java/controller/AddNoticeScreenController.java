@@ -4,15 +4,18 @@ package controller;
 import com.mycompany.noticemenugui.App;
 import java.io.IOException;
 import java.util.Map;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import model.Notice;
 import model.NoticeList;
 import model.User;
 
@@ -21,7 +24,7 @@ import model.User;
  * Handles user interactions for adding a new notice and manages the form inputs.
  * 
  * @author Michal Walus
- * @version 1.1
+ * @version 1.2
  */
 
 public class AddNoticeScreenController {
@@ -45,6 +48,9 @@ public class AddNoticeScreenController {
     private User user;
     /** The main list of notices where the new notice will be added. */
     private NoticeList notices;
+    /** Type of notice to choose from.*/
+    @FXML
+    private ChoiceBox typeChoice;
     /** 
      * Reference to the main application instance, used for managing scene transitions.
      * This allows the controller to request navigation to different screens within the application.
@@ -95,6 +101,7 @@ public class AddNoticeScreenController {
 
     tooltips.forEach((control, tip) -> control.setTooltip(new Tooltip(tip)));
         
+    typeChoice.setItems(FXCollections.observableArrayList(Notice.Type.values()));
         
         titleField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
@@ -141,12 +148,13 @@ public class AddNoticeScreenController {
      */
     @FXML
     private void submitButtonClicked(ActionEvent event) {
-        if(titleField.getText().isBlank() || descriptionField.getText().isBlank()){
+        if(titleField.getText().isBlank() || descriptionField.getText().isBlank() || typeChoice.getValue() == null){
             this.errorField.setText("Please provide all information above");
         }
         else {
+            Notice.Type selectedType = (Notice.Type) typeChoice.getValue();
             this.errorField.setText("");
-            this.notices.addNotice(this.titleField.getText(), this.user.getName(), this.descriptionField.getText());
+            this.notices.addNotice(this.titleField.getText(), this.user.getName(), selectedType, this.descriptionField.getText());
             try {
                 app.setRoot("TableScreen");
             } catch (IOException e) {

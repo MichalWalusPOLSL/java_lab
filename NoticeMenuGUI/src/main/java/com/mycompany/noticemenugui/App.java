@@ -20,39 +20,6 @@ import java.lang.reflect.InvocationTargetException;
  * @version 1.2
  */
 
-
-/**
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * TODO modyfikowalnosc pol
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * @author micha
- */
-
-
-
 public class App extends Application {
 
     /** The main Scene for the application. */

@@ -16,7 +16,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import model.Notice;
+import model.Notice.Type;
 import model.NoticeList;
 import model.User;
 
@@ -27,7 +29,7 @@ import model.User;
  * between different screens.
  * 
  * @author Michal Walus
- * @version 1.0
+ * @version 1.1
  */
 public class TableScreenController {
 
@@ -61,6 +63,9 @@ public class TableScreenController {
     /** CheckBox to filter and display only the user's own notices. */
     @FXML
     private CheckBox myNoticesCheckBox;
+    /** Column in the table for displaying type of notice. */
+    @FXML
+    private TableColumn<Notice, Type> typeColumn;
     /** The current user viewing or managing the notices. */
     private User user;
     /** The main list of notices available in the application. */
@@ -110,8 +115,24 @@ public class TableScreenController {
 
         tooltips.forEach((control, tip) -> control.setTooltip(new Tooltip(tip)));
         
+        noticesTable.setEditable(true);
+        titleColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        titleColumn.setOnEditCommit(event -> {
+            Notice notice = event.getRowValue();
+            if(!event.getNewValue().isBlank()){
+                notice.setTitle(event.getNewValue());
+            }
+                else{
+                errorLabel.setText("Title cannot be blank");
+                noticesTable.refresh();
+            }
+            populateNoticesTable();
+        });
+
+        
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         populateNoticesTable();
         noticesTable.setItems(notices.getAllObservable());
         deleteButton.setOnAction(event -> deleteButtonClicked(event));
@@ -161,24 +182,44 @@ private void deleteButtonClicked(ActionEvent event) {
         this.errorLabel.setText("Please select the notice that you want to delete");
     }
 }
-    
+
     /**
      * Handles the action when the "Check Notice" button is clicked.
      * Toggles between the table view and the detailed view of a selected notice.
      * If switching to the detailed view, it displays the content of the selected notice.
+     * If switching back to the table, it saves the edited content if applicable.
+     * Description can be edited by admin or owner. Description cannot be blank.
      *
      * @param event the event triggered by clicking the "Check Notice" button.
      */
     @FXML
     private void checkNoticeButtonClicked(ActionEvent event) {
         boolean isTableVisible = noticesTable.isVisible();
-        setVisibility(!isTableVisible);
-        checkNoticeButton.setText(isTableVisible ? "Back" : "Check Notice");
+
+        if (!isTableVisible && noticesTable.getSelectionModel().getSelectedItem() != null) {
+            Notice selectedNotice = noticesTable.getSelectionModel().getSelectedItem();
+            String editedDescription = descriptionTextArea.getText();
+            if(!editedDescription.isBlank()){
+                selectedNotice.setText(editedDescription);
+                setVisibility(!isTableVisible);
+                checkNoticeButton.setText(isTableVisible ? "Back" : "Check Notice");
+            }
+            else{
+                errorLabel.setVisible(true);
+                errorLabel.setText("Description cannot be blank, text not changed.");
+                
+            }
+            populateNoticesTable();
+        }
+
 
         if (isTableVisible && noticesTable.getSelectionModel().getSelectedItem() != null) {
             descriptionTextArea.setText(noticesTable.getSelectionModel().getSelectedItem().getText());
+            setVisibility(!isTableVisible);
+            checkNoticeButton.setText(isTableVisible ? "Back" : "Check Notice");
         }
     }
+
 
     /**
      * Sets the visibility of various UI elements based on whether the table or
@@ -222,25 +263,29 @@ private void deleteButtonClicked(ActionEvent event) {
     
     /**
      * Handles changes in the selection of rows in the notice table.
-     * Enables or disables buttons based on the selected notice and user permissions.
+     * Enables or disables buttons and manages the editability of the title column
+     * and the description text area based on the selected notice and user permissions.
      *
      * @param selectedNotice the notice selected in the table, or null if no selection.
      */
     private void handleRowSelectionChange(Notice selectedNotice) {
-    if (this.checkNoticeButton.isVisible() && this.deleteButton.isVisible()) {
         if (selectedNotice == null) {
             deleteButton.setDisable(true);
             checkNoticeButton.setDisable(true);
+            descriptionTextArea.setEditable(false);
+            noticesTable.setEditable(false);
+            descriptionTextArea.clear();
         } else {
             checkNoticeButton.setDisable(false);
-            if ("admin".equals(user.getName()) || selectedNotice.getAuthor().equals(user.getName())) {
-                deleteButton.setDisable(false);
-            } else {
-                deleteButton.setDisable(true);
-            }
+            boolean canEdit = "admin".equals(user.getName()) || selectedNotice.getAuthor().equals(user.getName());
+            deleteButton.setDisable(!canEdit);
+            noticesTable.setEditable(canEdit);
+            descriptionTextArea.setEditable(canEdit);
+            descriptionTextArea.setText(selectedNotice.getText());
+           
         }
     }
-}
+    
     /**
      * If myNoticeCheckbox is selected, it will show only notices of the current user.
      */

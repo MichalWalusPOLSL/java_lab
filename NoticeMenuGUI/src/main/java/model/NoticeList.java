@@ -4,8 +4,10 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Notice.Type;
 
 /**
  * This class represents a collection of notices stored in an ArrayList. 
@@ -15,6 +17,7 @@ import javafx.collections.ObservableList;
  * @version 1.3
  * @see Notice
  */
+@Getter
 public class NoticeList {
     
     /** The list that stores all notice objects. */
@@ -25,10 +28,11 @@ public class NoticeList {
      * 
      * @param title The title of the notice.
      * @param author The username of the person who created the notice.
+     * @param type  Type of notice
      * @param text The content or details of the notice.
      */
-    public void addNotice(String title, String author, String text) {
-        this.allNotice.add(new Notice(title, author, text));
+    public void addNotice(String title, String author, Type type, String text) {
+        this.allNotice.add(new Notice(title, type, author, text));
     }
     
     /**
@@ -77,14 +81,6 @@ public class NoticeList {
         return FXCollections.observableArrayList(allNotice);
     }
     
-    /**
-     * Returns all notices currently stored in the list as ArrayList
-     * 
-     * @return all notices in ArrayList format
-     */
-    public ArrayList<Notice> getAllNotices() {
-        return new ArrayList<>(allNotice); 
-    }
     
     /**
      * Returns all notices currently stored in the list for given user
@@ -93,7 +89,7 @@ public class NoticeList {
      * @return notices of the given user
      */
     public List<Notice> getNoticesByUser(String username) {
-        return this.getAllNotices().stream()
+        return this.getAllNotice().stream()
             .filter(notice -> notice.getAuthor().equals(username))
             .collect(Collectors.toList());
     }
