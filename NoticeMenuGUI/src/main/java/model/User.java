@@ -25,7 +25,7 @@ public class User {
      */
     public void setName(String name) throws MyThrownException{
         
-        if(name.isEmpty()) {
+        if(name == null || name.isEmpty() || name.isBlank()) {
             throw new MyThrownException("You have to pass your username");
         }
         

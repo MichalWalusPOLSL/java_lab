@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
  * The class stores details such as the title, author (username), 
  * and the description (text) of the notice.
  * 
+ * @author Michal Walus
+ * @version 1.3
  */
 @Data
 @AllArgsConstructor

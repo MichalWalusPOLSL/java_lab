@@ -82,7 +82,7 @@ public class App extends Application {
     private Object createControllerInstance(Class<?> controllerClass) {
         try {
             Constructor<?> constructor = controllerClass.getConstructor(User.class, NoticeList.class, App.class);
-            return constructor.newInstance(user, notices, this);  // Przekazujemy również instancję App
+            return constructor.newInstance(user, notices, this); 
         } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             System.out.println(e.toString());
         } 
