@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
  * @version 1.3
  */
 @Data
-@AllArgsConstructor
 public class Notice {
 
     /** The title of the notice. */
@@ -34,6 +33,48 @@ public class Notice {
         SERVICE,
         HIRE,
         OTHER
+    }
+    
+    /**
+     * Constructs a new Notice with validation.
+     *
+     * @param title The title of the notice.
+     * @param author The username of the author.
+     * @param type The type of the notice.
+     * @param text The description or content of the notice.
+     * @throws MyThrownException if any input is invalid.
+     */
+    public Notice(String title, String author, Type type, String text) throws MyThrownException {
+        validateInputs(title, author, type, text);
+        this.title = title;
+        this.author = author;
+        this.type = type;
+        this.text = text;
+    }
+
+    /**
+     * Validates the inputs for creating a Notice.
+     * Throws an exception if any field is invalid.
+     *
+     * @param title The title of the notice.
+     * @param author The username of the author.
+     * @param type The type of the notice.
+     * @param text The description or content of the notice.
+     * @throws MyThrownException if any input is invalid.
+     */
+    private void validateInputs(String title, String author, Type type, String text) throws MyThrownException {
+        if (title == null || title.isBlank()) {
+            throw new MyThrownException("Title cannot be empty or null.");
+        }
+        if (author == null || author.isBlank()) {
+            throw new MyThrownException("Author cannot be empty or null.");
+        }
+        if (type == null) {
+            throw new MyThrownException("Type cannot be null.");
+        }
+        if (text == null || text.isBlank()) {
+            throw new MyThrownException("Description cannot be empty or null.");
+        }
     }
 
 }

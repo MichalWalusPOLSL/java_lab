@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import model.MyThrownException;
 import model.Notice;
 import model.NoticeList;
 import model.User;
@@ -139,30 +140,33 @@ public class AddNoticeScreenController {
     }
 
 
-    /**
-     * Handles the action when the submit button is clicked.
-     * Validates the form inputs and adds a new notice to the list if valid.
-     * Displays an error message if inputs are missing.
-     * 
-     * @param event the event triggered by clicking the submit button.
-     */
-    @FXML
-    private void submitButtonClicked(ActionEvent event) {
-        if(titleField.getText().isBlank() || descriptionField.getText().isBlank() || typeChoice.getValue() == null){
-            this.errorField.setText("Please provide all information above");
-        }
-        else {
-            Notice.Type selectedType = (Notice.Type) typeChoice.getValue();
-            this.errorField.setText("");
-            this.notices.addNotice(this.titleField.getText(), this.user.getName(), selectedType, this.descriptionField.getText());
-            try {
-                app.setRoot("TableScreen");
-            } catch (IOException e) {
-                this.errorField.setText("Failed to load the next screen. Please try again.");
-                e.printStackTrace();
-            }
-        }
-    }
+   /**
+    * Handles the action when the submit button is clicked.
+    * Validates the form inputs and adds a new notice to the list if valid.
+    * Displays an error message if inputs are missing.
+    * 
+    * @param event the event triggered by clicking the submit button.
+    */
+   @FXML
+   private void submitButtonClicked(ActionEvent event) {
+       try {
+           String title = titleField.getText();
+           String description = descriptionField.getText();
+           Notice.Type selectedType = (Notice.Type) typeChoice.getValue();
+           String author = this.user.getName();
+           
+           Notice newNotice = new Notice(title, author, selectedType, description);
+           this.notices.addNotice(newNotice);
+           
+           this.errorField.setText("");
+           app.setRoot("TableScreen");
+       } catch (MyThrownException e) {
+           this.errorField.setText(e.getMessage());
+       } catch (IOException e) {
+           this.errorField.setText("Failed to load the next screen. Please try again.");
+           e.printStackTrace();
+       }
+   }
     
     
     /**

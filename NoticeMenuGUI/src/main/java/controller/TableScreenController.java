@@ -17,6 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import model.MyThrownException;
 import model.Notice;
 import model.Notice.Type;
 import model.NoticeList;
@@ -162,26 +163,25 @@ public class TableScreenController {
             }
     }
     
-    /**
-     * Handles the action when the "Delete" button is clicked.
-     * Deletes the selected notice from the list and updates the table view.
-     *
-     * @param event the event triggered by clicking the "Delete" button.
-     */
-    @FXML
-private void deleteButtonClicked(ActionEvent event) {
-    Notice selectedNotice = noticesTable.getSelectionModel().getSelectedItem();
-    
-    if (selectedNotice != null) {
-        this.errorLabel.setText("");
+   /**
+    * Handles the action when the "Delete" button is clicked.
+    * Deletes the selected notice from the list and updates the table view.
+    *
+    * @param event the event triggered by clicking the "Delete" button.
+    */
+   @FXML
+   private void deleteButtonClicked(ActionEvent event) {
+       Notice selectedNotice = noticesTable.getSelectionModel().getSelectedItem();
 
-        this.notices.deleteOne(selectedNotice);
+       try {
+            this.errorLabel.setText("");
+            this.notices.deleteOne(selectedNotice);
+            populateNoticesTable();
+       } catch (MyThrownException e) {
+           this.errorLabel.setText(e.getMessage());
+       }
+   }
 
-        populateNoticesTable();
-    } else {
-        this.errorLabel.setText("Please select the notice that you want to delete");
-    }
-}
 
     /**
      * Handles the action when the "Check Notice" button is clicked.

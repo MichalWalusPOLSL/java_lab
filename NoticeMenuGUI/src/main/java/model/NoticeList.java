@@ -23,17 +23,44 @@ public class NoticeList {
     /** The list that stores all notice objects. */
     private ArrayList<Notice> allNotice = new ArrayList<Notice>();
     
-    /**
-     * Adds a new notice to the list of notices.
-     * 
-     * @param title The title of the notice.
-     * @param author The username of the person who created the notice.
-     * @param type  Type of notice
-     * @param text The content or details of the notice.
-     */
-    public void addNotice(String title, String author, Type type, String text) {
-        this.allNotice.add(new Notice(title, type, author, text));
-    }
+   /**
+    * Adds a new notice to the list of notices.
+    * Validates the input Notice object to ensure it is not null.
+    * 
+    * @param notice The Notice object to be added.
+    * @throws MyThrownException if the Notice object is null or contains invalid fields.
+    */
+   public void addNotice(Notice notice) throws MyThrownException {
+       if (notice == null) {
+           throw new MyThrownException("The notice object cannot be null.");
+       }
+
+       validateNoticeFields(notice);
+       this.allNotice.add(notice);
+   }
+
+   /**
+    * Validates the fields of a Notice object.
+    * Throws an exception if any field is invalid.
+    *
+    * @param notice The Notice object to validate.
+    * @throws MyThrownException if any field in the Notice object is invalid.
+    */
+   private void validateNoticeFields(Notice notice) throws MyThrownException {
+       if (notice.getTitle() == null || notice.getTitle().isBlank()) {
+           throw new MyThrownException("Title cannot be empty or null.");
+       }
+       if (notice.getAuthor() == null || notice.getAuthor().isBlank()) {
+           throw new MyThrownException("Author cannot be empty or null.");
+       }
+       if (notice.getType() == null) {
+           throw new MyThrownException("Type cannot be null.");
+       }
+       if (notice.getText() == null || notice.getText().isBlank()) {
+           throw new MyThrownException("Description cannot be empty or null.");
+       }
+   }
+
     
     /**
      * Returns all the notices currently stored in the list.
@@ -44,24 +71,24 @@ public class NoticeList {
         return allNotice;
     }
     
-    /**
-     * Returns a specific notice based on its position in the list.
-     * 
-     * @param i The index of the notice in the list.
-     * @return The notice at the specified index.
-     */
-    public Notice getOne(int i){
-        return this.allNotice.get(i);
-    }
     
     /**
      * Deletes a specific notice from the list.
+     * Validates that the notice is not null and exists in the list before deletion.
      * 
      * @param notice The notice to be deleted.
+     * @throws MyThrownException if the notice is null or does not exist in the list.
      */
-    public void deleteOne(Notice notice) {
-        this.allNotice.remove(notice); 
+    public void deleteOne(Notice notice) throws MyThrownException {
+        if (notice == null) {
+            throw new MyThrownException("The notice to be deleted cannot be null.");
+        }
+        if (!this.allNotice.contains(notice)) {
+            throw new MyThrownException("The notice does not exist in the list.");
+        }
+        this.allNotice.remove(notice);
     }
+
     
     /**
      * Returns the number of notices currently stored in the list.
