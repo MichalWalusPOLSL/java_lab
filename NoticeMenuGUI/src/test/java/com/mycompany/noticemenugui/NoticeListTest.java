@@ -1,14 +1,18 @@
 package com.mycompany.noticemenugui;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import model.MyThrownException;
 import model.NoticeList;
 import model.Notice;
+import model.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import model.NoticeIdentity;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,54 +21,70 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
+ * Class consisting of multiple NoticeList tests.
  *
- * @author micha
+ * @version 1.0
+ * @author Michal Walus
  */
 
 public class NoticeListTest {
     
+    /**List of predefined notices*/
     private static NoticeList testList;
     
+   /**
+    * Sets up a test environment for the NoticeList class.
+    * Initializes a list of notices with predefined data.
+    */
     @BeforeEach
     public void setUpClass() {
         try {
             testList = new NoticeList();
-            Notice test1 = new Notice("Initial Notice", "User1", Notice.Type.OTHER, "Initial content");
-            Notice test2 = new Notice("Second Notice", "User2", Notice.Type.RENTAL, "Second content");
-            Notice test3 = new Notice("Apple", "Alice123", Notice.Type.SALE, "Orchard");
-            Notice test4 = new Notice("Banana", "BobBuilder", Notice.Type.HIRE, "Tropical");
-            Notice test5 = new Notice("Cherry", "CharlieCoder", Notice.Type.SERVICE, "Delicious");
-            Notice test6 = new Notice("Date", "DaisyDesigner", Notice.Type.RENTAL, "Desert");
-            testList.addNotice(test1);
-            testList.addNotice(test2);
-            testList.addNotice(test3);
-            testList.addNotice(test4);
-            testList.addNotice(test5);
-            testList.addNotice(test6);
+
+            /**
+             * List of predefined notices to be added to the NoticeList.
+             */
+            List<Notice> notices = new ArrayList<>();
+            notices.add(new Notice("Initial Notice", "User1", Type.OTHER, "Initial content"));
+            notices.add(new Notice("Second Notice", "User2", Type.RENTAL, "Second content"));
+            notices.add(new Notice("Apple", "Alice123", Type.SALE, "Orchard"));
+            notices.add(new Notice("Banana", "BobBuilder", Type.HIRE, "Tropical"));
+            notices.add(new Notice("Cherry", "CharlieCoder", Type.SERVICE, "Delicious"));
+            notices.add(new Notice("Date", "DaisyDesigner", Type.RENTAL, "Desert"));
+
+            for (Notice notice : notices) {
+                testList.addNotice(notice);
+            }
         } catch (MyThrownException ex) {
-            fail("Correct data caused exception");
+            fail("Correct data caused exception: " + ex.getMessage());
         }
     }
     
+    /**
+     * Clears the list of notices after each test.
+     *
+     * Ensures that the NoticeList is empty, preventing test interference caused
+     * by leftover data from previous tests.
+     */
     @AfterEach
     public void clearList(){
         testList.getAll().clear();
     }
     
     /**
-     * Provides valid Notice objects for testing the addNotice method.
+     * Provides valid Notice objects for testing.
      *
      * @return Stream of valid Notice objects.
      */
     static Stream<org.junit.jupiter.params.provider.Arguments> provideValidNotices() {
         try{
              return Stream.of(
-                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Apple", "Author1", Notice.Type.RENTAL, "Fruit description")),
-                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Banana", "Author2", Notice.Type.SALE, "Tropical fruit")),
-                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Car", "Author3", Notice.Type.SERVICE, "Vehicle details")),
-                     org.junit.jupiter.params.provider.Arguments.of(new Notice("House", "Author4", Notice.Type.HIRE, "Property details")),
-                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Book", "Author5", Notice.Type.SALE, "Literary item")),
-                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Chair", "Author6", Notice.Type.RENTAL, "Furniture"))
+                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Apple", "Author1", Type.RENTAL, "Fruit description")),
+                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Banana", "Author2", Type.SALE, "Tropical fruit")),
+                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Car", "Author3", Type.SERVICE, "Vehicle details")),
+                     org.junit.jupiter.params.provider.Arguments.of(new Notice("House", "Author4", Type.HIRE, "Property details")),
+                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Book", "Author5", Type.SALE, "Literary item")),
+                     org.junit.jupiter.params.provider.Arguments.of(new Notice("Chair", "Author6", Type.RENTAL, "Furniture"))
 
              );
          }
@@ -110,7 +130,7 @@ public class NoticeListTest {
     @ParameterizedTest
     @MethodSource("provideValidNotices")
     void testAddNoticeWithNullAuthor(Notice notice) {
-        notice.setAuthor(null);
+        notice.setIdentity(new NoticeIdentity(Type.OTHER, null));
         Exception ex = assertThrows(MyThrownException.class, () -> testList.addNotice(notice), "This should throw MyThrownException");
         assertEquals("Author cannot be empty or null.", ex.getMessage(), "Incorrect exception message: " + ex.getMessage());
     }
@@ -123,7 +143,7 @@ public class NoticeListTest {
     @ParameterizedTest
     @MethodSource("provideValidNotices")
     void testAddNoticeWithNullType(Notice notice) {
-        notice.setType(null);
+        notice.setIdentity(new NoticeIdentity(null, "authorRandom"));
         Exception ex = assertThrows(MyThrownException.class, () -> testList.addNotice(notice), "This should throw MyThrownException");
         assertEquals("Type cannot be null.", ex.getMessage(), "Incorrect exception message: " + ex.getMessage());
     }
@@ -173,9 +193,5 @@ public class NoticeListTest {
     }
     
     
-    
-    
-    
-    //TODO: dodac rekord do modelu
     
 }

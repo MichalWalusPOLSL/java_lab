@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
  * and the description (text) of the notice.
  * 
  * @author Michal Walus
- * @version 1.3
+ * @version 1.5
  */
 @Data
 public class Notice {
@@ -16,24 +16,11 @@ public class Notice {
     /** The title of the notice. */
     private String title;
 
-    /** The type of the notice. */
-    private Type type; 
-
-    /** The username of the person who created the notice. */
-    private String author;
+    /**Identity (Type of Notice and author) */
+    private NoticeIdentity identity;
 
     /** The description or content of the notice. */
     private String text;
-
-    
-    /** Enum type for different categories of notices. */
-    public enum Type {
-        SALE,
-        RENTAL,
-        SERVICE,
-        HIRE,
-        OTHER
-    }
     
     /**
      * Constructs a new Notice with validation.
@@ -47,8 +34,7 @@ public class Notice {
     public Notice(String title, String author, Type type, String text) throws MyThrownException {
         validateInputs(title, author, type, text);
         this.title = title;
-        this.author = author;
-        this.type = type;
+        this.identity = new NoticeIdentity(type, author);
         this.text = text;
     }
 
@@ -76,6 +62,15 @@ public class Notice {
             throw new MyThrownException("Description cannot be empty or null.");
         }
     }
+    
+    public String getAuthor(){
+        return this.identity.author();
+    }
+    
+    public Type getType(){
+        return this.identity.type();
+    }
+    
 
 }
 

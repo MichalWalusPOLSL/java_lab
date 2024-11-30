@@ -19,7 +19,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import model.MyThrownException;
 import model.Notice;
-import model.Notice.Type;
+import model.Type;
 import model.NoticeList;
 import model.User;
 

@@ -17,7 +17,9 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import model.MyThrownException;
 import model.Notice;
+import model.NoticeIdentity;
 import model.NoticeList;
+import model.Type;
 import model.User;
 
 /**
@@ -102,7 +104,7 @@ public class AddNoticeScreenController {
 
     tooltips.forEach((control, tip) -> control.setTooltip(new Tooltip(tip)));
         
-    typeChoice.setItems(FXCollections.observableArrayList(Notice.Type.values()));
+    typeChoice.setItems(FXCollections.observableArrayList(Type.values()));
         
         titleField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.TAB) {
@@ -152,7 +154,7 @@ public class AddNoticeScreenController {
        try {
            String title = titleField.getText();
            String description = descriptionField.getText();
-           Notice.Type selectedType = (Notice.Type) typeChoice.getValue();
+           Type selectedType = (Type) typeChoice.getValue();
            String author = this.user.getName();
            
            Notice newNotice = new Notice(title, author, selectedType, description);

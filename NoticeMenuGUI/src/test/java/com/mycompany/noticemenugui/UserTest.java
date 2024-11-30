@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package com.mycompany.noticemenugui;
 
 import model.User;
@@ -18,18 +14,31 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- *
- * @author micha
+ * Unit tests for the User class.
+ * This class validates the functionality of the setName method using parameterized tests.
+ * 
+ * @version 1.0
+ * @author Michal Walus
  */
 public class UserTest {
 
+    /** user object defined for tests */
     private User user;
-
+    
+    /**
+     * Initializes the User object before each test.
+     */
     @BeforeEach
     public void setUp() {
         user = new User();
     }
-
+    
+    /**
+     * Tests the User setName(String) method with valid names.
+     * Expects no exceptions and validates that the name is correctly set.
+     * 
+     * @param name The valid name to set for the user.
+     */
     @ParameterizedTest
     @ValueSource(strings = {"JohnDoe", "Alice", "a12345", "Zilog"})
     public void testSetNameValidNames(String name) {
@@ -37,7 +46,12 @@ public class UserTest {
         assertEquals(name, user.getName(), "The username should be set to " + name);
     }
     
-    
+    /**
+     * Tests the User setName(String) method with invalid names.
+     * Expects MyThrownException to be thrown with a specific error message.
+     * 
+     * @param name The invalid name that should cause an exception.
+     */
     @ParameterizedTest
     @ValueSource(strings = {"123Name", "_underscore", "8051"})
     public void testSetNameInvalidNames(String name) {
@@ -45,6 +59,12 @@ public class UserTest {
         assertEquals("Given username doesn't start with a letter", exception.getMessage(), "Incorrect exception: " + exception.getMessage());
     }
     
+    /**
+     * Tests the User setName(String) method with null, empty, or blank names.
+     * Expects MyThrownException to be thrown with a specific error message.
+     * 
+     * @param name The name that should cause an exception due to being null, empty, or blank.
+     */
     @NullSource
     @EmptySource
     @ValueSource(strings = {" ", " ", "\t", "\n"})

@@ -6,7 +6,7 @@ import lombok.Getter;
  * Class that characterises the user. It stores his username.
  * 
  * @author Michal Walus
- * @version 1.1
+ * @version 1.2
  */
 
 @Getter
@@ -25,16 +25,14 @@ public class User {
      */
     public void setName(String name) throws MyThrownException{
         
-        if(name == null || name.isEmpty() || name.isBlank()) {
-            throw new MyThrownException("You have to pass your username");
+        if (name == null || name.isBlank()) {
+        throw new MyThrownException("You have to pass your username");
         }
-        
-        else if (Character.isLetter(name.charAt(0))){
-            this.name = name;
-        }
-        else {
+        if (!Character.isLetter(name.charAt(0))) {
             throw new MyThrownException("Given username doesn't start with a letter");
         }
+        
+        this.name = name;
     }
 
     

@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Notice.Type;
+import model.Type;
 
 /**
  * This class represents a collection of notices stored in an ArrayList. 
  * It provides methods to add, retrieve, and delete notices from the list.
  * 
  * @author Michal Walus
- * @version 1.3
+ * @version 1.4
  * @see Notice
  */
 @Getter
