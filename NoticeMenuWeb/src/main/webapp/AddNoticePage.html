@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Notice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 400px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 17px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: #d20505;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .leave-button {
+            margin-top: 10px;
+            background-color: #f44336;
+        }
+
+        .leave-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add your Notice</h1>
+        <form id="addNoticeForm" method="post" action="/submit-notice">
+            <div class="form-group">
+                <label for="titleField">Title:</label>
+                <input type="text" id="titleField" name="title">
+            </div>
+            <div class="form-group">
+                <label for="typeChoice">Type:</label>
+                <select id="typeChoice" name="type">
+                    <option value="">Select type</option>
+                    <option value="Sale">Sale</option>
+                    <option value="Rental">Rental</option>
+                    <option value="Service">Service</option>
+                    <option value="Hire">Hire</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="descriptionField">Description:</label>
+                <textarea id="descriptionField" name="description" rows="4"></textarea>
+            </div>
+            <button id="submitButton" type="submit">Submit</button>
+            <div id="errorField" class="error-message"></div>
+            <button id="leaveButton" class="leave-button" type="button">Leave</button>
+        </form>
+    </div>
+</body>
+</html>
