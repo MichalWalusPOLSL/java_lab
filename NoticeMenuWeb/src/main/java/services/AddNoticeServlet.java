@@ -57,38 +57,80 @@ public class AddNoticeServlet extends HttpServlet {
                     Logger.getLogger(AddNoticeServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
-            
+           
+
+            int rowIndex = 0;
+
             out.println("<!DOCTYPE html>");
-            out.println("<html>");
+            out.println("<html lang=\"en\">");
             out.println("<head>");
-            out.println("<title>Simple Table</title>");
-            out.println("<link rel=\"stylesheet\" href=\"styles.css\">");
+            out.println("<meta charset=\"UTF-8\">");
+            out.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            out.println("<title>Editable Table</title>");
+            out.println("<style>");
+            out.println("body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9f9f9; }");
+            out.println("table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }");
+            out.println("table, th, td { border: 1px solid #ccc; }");
+            out.println("th, td { padding: 10px; text-align: left; }");
+            out.println("th { background-color: #f2f2f2; }");
+            out.println(".form-container { margin-top: 20px; padding: 20px; background-color: #fff; border: 1px solid #ccc; border-radius: 5px; }");
+            out.println(".form-container label { display: block; margin-bottom: 5px; font-weight: bold; }");
+            out.println(".form-container input, .form-container select, .form-container button { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }");
+            out.println(".form-container button { background-color: #007bff; color: white; cursor: pointer; }");
+            out.println(".form-container button:hover { background-color: #0056b3; }");
+            out.println(".action-button { padding: 5px 10px; font-size: 14px; margin: 0 5px; border: none; cursor: pointer; border-radius: 3px; }");
+            out.println(".update-button { background-color: #28a745; color: white; }");
+            out.println(".update-button:hover { background-color: #218838; }");
+            out.println(".delete-button { background-color: #dc3545; color: white; }");
+            out.println(".delete-button:hover { background-color: #c82333; }");
+            out.println("</style>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Table Example</h1>");
+            out.println("<h1>Notices Table</h1>");
             out.println("<table>");
-            out.println("<thead><tr><th>Title</th><th>Author</th><th>Type</th><th>Text</th></tr></thead>");
+            out.println("<thead><tr><th>Title</th><th>Author</th><th>Type</th><th>Text</th><th>Action</th></tr></thead>");
             out.println("<tbody>");
 
             for (Notice notice : notices.getAll()) {
+
                 out.println("<tr>");
-                out.println("<td>" + notice.getTitle() + "</td>");
+
+                
+                out.println("<form action=\"/NoticeMenuWeb/UpdateNoticeServlet\" method=\"POST\">");
+                out.println("<td><input type=\"text\" name=\"title\" value=\"" + notice.getTitle() + "\" required></td>");
                 out.println("<td>" + notice.getAuthor() + "</td>");
-                out.println("<td>" + notice.getType().name() + "</td>");
-                out.println("<td>" + notice.getText() + "</td>");
+                out.println("<td><select name=\"type\" required>");
+                for (Type currentType : Type.values()) {
+                    if (currentType == notice.getType()) {
+                        out.println("<option value=\"" + currentType.name() + "\" selected>" + currentType.name() + "</option>");
+                    } else {
+                        out.println("<option value=\"" + currentType.name() + "\">" + currentType.name() + "</option>");
+                    }
+                }
+                out.println("</select></td>");
+                out.println("<td><input type=\"text\" name=\"text\" value=\"" + notice.getText() + "\" required></td>");
+                out.println("<td>");
+                out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
+                out.println("<button type=\"submit\" class=\"action-button update-button\">Update</button>");
+                out.println("</form>");
+
+                
+                out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
+                out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
+                out.println("<button type=\"submit\" class=\"action-button delete-button\">Delete</button>");
+                out.println("</form>");
+                out.println("</td>");
                 out.println("</tr>");
+                rowIndex++;
             }
 
             out.println("</tbody>");
             out.println("</table>");
 
             out.println("<div class=\"form-container\">");
-            out.println("<form action=\"/addNotice\" method=\"POST\">");
+            out.println("<form action=\"/NoticeMenuWeb/AddNoticeServlet\" method=\"POST\">");
             out.println("<label for=\"title\">Title</label>");
             out.println("<input type=\"text\" id=\"title\" name=\"title\" placeholder=\"Enter title\" required>");
-            out.println("<label for=\"author\">Author</label>");
-            out.println("<input type=\"text\" id=\"author\" name=\"author\" placeholder=\"Enter author\" required>");
             out.println("<label for=\"type\">Type</label>");
             out.println("<select id=\"type\" name=\"type\" required>");
             out.println("<option value=\"\">Select type</option>");
@@ -105,6 +147,7 @@ public class AddNoticeServlet extends HttpServlet {
             out.println("</div>");
             out.println("</body>");
             out.println("</html>");
+
             
         }
     }

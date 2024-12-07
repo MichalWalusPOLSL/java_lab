@@ -12,11 +12,6 @@ public class SingletonModel {
 
         if(instanceNotice == null) {
             instanceNotice = new NoticeList();
-            try{            
-                instanceNotice.addNotice( new Notice("Initial Notice", "User1", Type.OTHER, "Initial content"));
-                
-            } catch(MyThrownException ex) {
-            }
         }
         return instanceNotice;
     }   
