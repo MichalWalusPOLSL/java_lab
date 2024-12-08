@@ -57,7 +57,7 @@ public class LoginServlet extends HttpServlet {
                 out.println("</html>");
             }
         
-        response.sendRedirect(request.getContextPath() + "/TablePage.html");
+        response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
     }
 
     /**
