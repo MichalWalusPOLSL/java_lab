@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        user = SingletonModel.getInstanceUser();
+       
     }
 
     /**
@@ -38,11 +38,12 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
+        
+        user = SingletonModel.getInstanceUser();
         String username = request.getParameter("username");
 
         try{
-            user.setName(username);
+            SingletonModel.getInstanceUser().setName(username);
         }
         catch (MyThrownException ex) {
                 out.println("<!DOCTYPE html>");

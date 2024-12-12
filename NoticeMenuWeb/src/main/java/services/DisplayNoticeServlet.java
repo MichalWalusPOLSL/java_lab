@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
+
 package services;
 
 import java.io.IOException;
@@ -25,6 +22,7 @@ public class DisplayNoticeServlet extends HttpServlet {
 
     
     private NoticeList notices;
+    private String currentUserName;
     
     @Override
     public void init() {
@@ -44,6 +42,7 @@ public class DisplayNoticeServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            currentUserName = SingletonModel.getInstanceUser().getName();
             int rowIndex = 0;
 
             out.println("<!DOCTYPE html>");
@@ -68,6 +67,9 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println(".update-button:hover { background-color: #218838; }");
             out.println(".delete-button { background-color: #dc3545; color: white; }");
             out.println(".delete-button:hover { background-color: #c82333; }");
+            out.println(".disabled-button { background-color: #cccccc; color: #666666; cursor: not-allowed; }");
+            out.println(".leave-button { padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }");
+            out.println(".leave-button:hover { background-color: #0056b3; }");
             out.println("</style>");
             out.println("</head>");
             out.println("<body>");
@@ -77,7 +79,6 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println("<tbody>");
 
             for (Notice notice : notices.getAll()) {
-
                 out.println("<tr>");
 
                 out.println("<form action=\"/NoticeMenuWeb/UpdateNoticeServlet\" method=\"POST\">");
@@ -94,14 +95,28 @@ public class DisplayNoticeServlet extends HttpServlet {
                 out.println("</select></td>");
                 out.println("<td><input type=\"text\" name=\"text\" value=\"" + notice.getText() + "\" required></td>");
                 out.println("<td>");
-                out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                out.println("<button type=\"submit\" class=\"action-button update-button\">Update</button>");
-                out.println("</form>");
 
-                out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
-                out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                out.println("<button type=\"submit\" class=\"action-button delete-button\">Delete</button>");
-                out.println("</form>");
+                if (notice.getAuthor().equals(currentUserName)) {
+                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
+                    out.println("<button type=\"submit\" class=\"action-button update-button\">Update</button>");
+                    out.println("</form>");
+                    out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
+                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
+                    out.println("<button type=\"submit\" class=\"action-button delete-button\">Delete</button>");
+                    out.println("</form>");
+                } else {
+                    
+                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
+                    out.println("<button type=\"button\" class=\"action-button update-button disabled-button\" disabled>Update</button>");
+                    out.println("</form>");
+                    out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
+                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
+                    out.println("<button type=\"button\" class=\"action-button delete-button disabled-button\" disabled>Delete</button>");
+                    out.println("</form>");
+                    
+                }
+
+
                 out.println("</td>");
                 out.println("</tr>");
                 rowIndex++;
@@ -128,9 +143,15 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println("<button type=\"submit\">Add</button>");
             out.println("</form>");
             out.println("</div>");
+
+            out.println("<div style=\"text-align:center; margin-top:20px;\">");
+            out.println("<a href=\"/NoticeMenuWeb\"><button class=\"leave-button\">Leave</button></a>");
+            out.println("</div>");
+
             out.println("</body>");
             out.println("</html>");
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

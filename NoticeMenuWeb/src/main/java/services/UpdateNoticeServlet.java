@@ -30,22 +30,33 @@ public class UpdateNoticeServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        int rowIndex = Integer.parseInt(request.getParameter("rowIndex"));
+        String row = request.getParameter("rowIndex");
         String title = request.getParameter("title");
         Type type = Type.valueOf(request.getParameter("type"));
         String text = request.getParameter("text");
         
         try (PrintWriter out = response.getWriter()) {
             
-            if(title != null && type != null && text != null){
-                
+            if(title != null && type != null && text != null && row != null){
+                int rowIndex = Integer.parseInt(row);
                 Notice notice = SingletonModel.getInstanceNotice().getAll().get(rowIndex);
                 notice.setText(text);
                 notice.setTitle(title);
                 notice.setIdentity(new NoticeIdentity(type, notice.getAuthor()));
+                response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
                 
             }
-            response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
+            else{
+                out.println("<!DOCTYPE html>");
+                out.println("<html>");
+                out.println("<head>");
+                out.println("<title>Error</title>");
+                out.println("</head>");
+                out.println("<body>");
+                out.println("<h1>Error: " + "Not enough data Error, please try again" + "</h1>");
+                out.println("</body>");
+                out.println("</html>");
+            }
         }
         
     }
