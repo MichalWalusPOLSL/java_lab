@@ -11,20 +11,26 @@ import static java.lang.System.out;
 import model.*;
 
 /**
- *
- * @author micha
+ * Servlet responsible for updating existing notices. Handles user requests to
+ * modify the title, type, or text of a specific notice.
+ * 
+ * @author Michal Walus
+ * @version 1.0
  */
 @WebServlet(name = "UpdateNoticeServlet", urlPatterns = {"/UpdateNoticeServlet"})
 public class UpdateNoticeServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes both GET and POST requests for updating notices. Retrieves the
+     * row index, title, type, and text from the request, validates them, and
+     * updates the corresponding notice in the model. Redirects to the display
+     * page upon success or displays an error message if validation fails.
      *
-     * @param request servlet request
-     * @param response servlet response
+     * @param request the HTTP request containing parameters for updating the
+     * notice
+     * @param response the HTTP response to be sent back to the client
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -97,7 +103,7 @@ public class UpdateNoticeServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Handles the update of existing notices by modifying their title, type, and text.";
     }// </editor-fold>
 
 }

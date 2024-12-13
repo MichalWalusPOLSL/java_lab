@@ -11,15 +11,24 @@ import static java.lang.System.out;
 import model.*;
 
 /**
- *
- * @author micha
+ * DeleteNoticeServlet is responsible for handling requests to delete a notice
+ * from the shared NoticeList. The servlet identifies the notice to delete based
+ * on the provided row index parameter.
+ * 
+ * @author Michal Walus
+ * @version 1.0
  */
 @WebServlet(name = "DeleteNoticeServlet", urlPatterns = {"/DeleteNoticeServlet"})
 public class DeleteNoticeServlet extends HttpServlet {
     
+    /**
+     * The shared instance of NoticeList used to store notices.
+     */
     private NoticeList notices;
-    
-    
+
+    /**
+     * Initializes the servlet and retrieves the shared NoticeList instance.
+     */
     @Override
     public void init() {
         notices = SingletonModel.getInstanceNotice();
@@ -27,38 +36,52 @@ public class DeleteNoticeServlet extends HttpServlet {
     
     
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP GET and POST methods. Extracts the row
+     * index of the notice to delete from the request and removes the
+     * corresponding notice from the shared list. If an error occurs, an error
+     * page is displayed.
      *
-     * @param request servlet request
-     * @param response servlet response
+     * @param request the HTTP request containing the row index parameter
+     * @param response the HTTP response to be sent back to the client
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-       int rowIndex = Integer.parseInt(request.getParameter("rowIndex"));
-       
-       try{
-           notices.deleteOne(notices.getAll().get(rowIndex));
-           response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
-       }
-       catch (MyThrownException ex){
-           out.println("<!DOCTYPE html>");
-           out.println("<html>");
-           out.println("<head>");
-           out.println("<title>Error</title>");
-           out.println("</head>");
-           out.println("<body>");
-           out.println("<h1>Error: " + ex.getMessage() + "</h1>");
-           out.println("</body>");
-           out.println("</html>");
-       }
-       
-       
-       
+        String rowString = request.getParameter("rowIndex");
+        if(rowString != null){
+            int rowIndex = Integer.parseInt(rowString);
+
+            try {
+                notices.deleteOne(notices.getAll().get(rowIndex));
+                response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
+            } catch (MyThrownException ex) {
+                out.println("<!DOCTYPE html>");
+                out.println("<html>");
+                out.println("<head>");
+                out.println("<title>Error</title>");
+                out.println("</head>");
+                out.println("<body>");
+                out.println("<h1>Error: " + ex.getMessage() + "</h1>");
+                out.println("</body>");
+                out.println("</html>");
+            }
+           
+        }
+        else {
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Error</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Error: " + "Not enough data Error, please try again" + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -97,7 +120,7 @@ public class DeleteNoticeServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Handles requests for deleting a specific notice.";
     }// </editor-fold>
 
 }

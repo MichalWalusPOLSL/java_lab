@@ -13,28 +13,31 @@ import model.SingletonModel;
 import model.*;
 
 /**
- * Servlet responsible for validating the username and providing feedback to the user.
+ * Servlet responsible for handling user login. Validates the username, tracks
+ * user visit count using cookies, and redirects to the notice display page.
+ * 
+ * @author Michal Walus
+ * @version 1.0
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/userlogin"})
 public class LoginServlet extends HttpServlet {
-
+    
+    /**
+     * The user currently using the system.
+     */
     private User user;
 
-    /**
-     * Initializes the servlet and its dependencies.
-     */
-    @Override
-    public void init() {
-       
-    }
 
     /**
-     * Processes both GET and POST requests for username validation.
+     * Processes both GET and POST requests for username validation. Retrieves
+     * the username from the request, checks cookies for the user's visit count,
+     * updates or creates a new cookie, and sets the username in the shared
+     * SingletonModel instance.
      *
-     * @param request  the HTTP request containing the username parameter
+     * @param request the HTTP request containing the username parameter
      * @param response the HTTP response to be sent back to the client
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an input or output error occurs
+     * @throws IOException if an input or output error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -44,46 +47,41 @@ public class LoginServlet extends HttpServlet {
         user = SingletonModel.getInstanceUser();
         String username = request.getParameter("username");
         Cookie[] cookies = request.getCookies();
-        int cookieValue = -1;
-        Cookie loginCookie;
+        int cookieValue = 1;
+        Cookie loginCookie = null;
 
-        try{
+        try {
             SingletonModel.getInstanceUser().setName(username);
+
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals(username)) {
-                        cookieValue = Integer.parseInt(cookie.getValue());
+                        cookieValue = Integer.parseInt(cookie.getValue()) + 1;
                         cookie.setMaxAge(0);
+                        break;
                     }
                 }
-                if(cookieValue == -1){
-                    loginCookie = new Cookie(username, "1");
-                }
-                else{
-                    cookieValue++;
-                    loginCookie = new Cookie(username, Integer.toString(cookieValue));
-                }
-                loginCookie.setPath("/");
-                response.addCookie(loginCookie);
             }
-            else{
-                response.addCookie(new Cookie(username, "1"));
-            }
-                
+
+            loginCookie = new Cookie(username, Integer.toString(cookieValue));
+            loginCookie.setPath("/");
+            response.addCookie(loginCookie);
+            response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
+
         } catch (MyThrownException ex) {
-                out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Login Error</title>");
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Error: " + ex.getMessage() + "</h1>");
-                out.println("<a href=\"/NoticeMenuWeb/\">Back to Login Page</a>");
-                out.println("</body>");
-                out.println("</html>");
-            }
-        
-        response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Login Error</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Error: " + ex.getMessage() + "</h1>");
+            out.println("<a href=\"/NoticeMenuWeb/\">Back to Login Page</a>");
+            out.println("</body>");
+            out.println("</html>");
+            
+        }
+
     }
 
     /**
@@ -121,6 +119,6 @@ public class LoginServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "LoginServlet validates username and provides feedback.";
+        return "LoginServlet validates the username, tracks user visits using cookies, and redirects to the notice display page.";
     }
 }

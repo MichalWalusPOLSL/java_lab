@@ -16,27 +16,41 @@ import model.SingletonModel;
 import model.Type;
 
 /**
+ * Servlet that displays notices in an editable table format and handles user
+ * interactions. Includes options for updating, deleting, and adding notices,
+ * with tooltips for guidance. It also tracks user visits using cookies.
  *
- * @author micha
+ * @author Michal Walus
+ * @version 1.0
  */
 @WebServlet(name = "DisplayNoticeServlet", urlPatterns = {"/DisplayNoticeServlet"})
 public class DisplayNoticeServlet extends HttpServlet {
 
-    
+    /**
+     * The shared instance of NoticeList used to store notices.
+     */
     private NoticeList notices;
+    /**
+     * The username of person currently using the system.
+     */
     private String currentUserName;
     
+    /**
+     * Initializes the servlet by loading the shared NoticeList instance.
+     */
     @Override
     public void init() {
         notices = SingletonModel.getInstanceNotice();
     }
     
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes both GET and POST requests. Renders an HTML table displaying
+     * notices with options to update or delete them and provides a form for
+     * adding new notices. Tracks the user's visit count using cookies.
      *
-     * @param request servlet request
-     * @param response servlet response
+     * @param request the HttpServletRequest containing the client's request
+     * @param response the HttpServletResponse for sending the response to the
+     * client
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
@@ -46,13 +60,14 @@ public class DisplayNoticeServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             currentUserName = SingletonModel.getInstanceUser().getName();
             int rowIndex = 0;
-            String visitCount = "1ewfwefd";
+            String visitCount = "1";
             
             Cookie[] cookies = request.getCookies();
             
             for(Cookie cookie : cookies){
                 if(cookie.getName().equals(currentUserName)){
                     visitCount = cookie.getValue();
+                    break;
                 }
             }
 
@@ -110,20 +125,20 @@ public class DisplayNoticeServlet extends HttpServlet {
 
                 if (notice.getAuthor().equals(currentUserName) || currentUserName.equals("admin")) {
                     out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                    out.println("<button type=\"submit\" class=\"action-button update-button\">Update</button>");
+                    out.println("<button type=\"submit\" class=\"action-button update-button\" title=\"Press to update this Notice\" >Update</button>");
                     out.println("</form>");
                     out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
                     out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                    out.println("<button type=\"submit\" class=\"action-button delete-button\">Delete</button>");
+                    out.println("<button type=\"submit\" class=\"action-button delete-button\" title=\"Press to delete this Notice\" >Delete</button>");
                     out.println("</form>");
                 } else {
                     
                     out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                    out.println("<button type=\"button\" class=\"action-button update-button disabled-button\" disabled>Update</button>");
+                    out.println("<button type=\"button\" class=\"action-button update-button disabled-button\" title=\"You're not an owner of this Notice\" disabled>Update</button>");
                     out.println("</form>");
                     out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
                     out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                    out.println("<button type=\"button\" class=\"action-button delete-button disabled-button\" disabled>Delete</button>");
+                    out.println("<button type=\"button\" class=\"action-button delete-button disabled-button\" title=\"You're not an owner of this Notice\" disabled>Delete</button>");
                     out.println("</form>");
                     
                 }
@@ -140,9 +155,9 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println("<div class=\"form-container\">");
             out.println("<form action=\"/NoticeMenuWeb/AddNoticeServlet\" method=\"POST\">");
             out.println("<label for=\"title\">Title</label>");
-            out.println("<input type=\"text\" id=\"title\" name=\"title\" placeholder=\"Enter title\" required>");
+            out.println("<input type=\"text\" id=\"title\" name=\"title\" placeholder=\"Enter title\" required title=\"Please fill the title of your Notice\" >");
             out.println("<label for=\"type\">Type</label>");
-            out.println("<select id=\"type\" name=\"type\" required>");
+            out.println("<select id=\"type\" name=\"type\" required title=\"Please select Type of Notice you want to add\">");
             out.println("<option value=\"\">Select type</option>");
             out.println("<option value=\"SALE\">SALE</option>");
             out.println("<option value=\"RENTAL\">RENTAL</option>");
@@ -151,13 +166,13 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println("<option value=\"OTHER\">OTHER</option>");
             out.println("</select>");
             out.println("<label for=\"text\">Text</label>");
-            out.println("<input type=\"text\" id=\"text\" name=\"text\" placeholder=\"Enter text\" required>");
-            out.println("<button type=\"submit\">Add</button>");
+            out.println("<input type=\"text\" id=\"text\" name=\"text\" placeholder=\"Enter text\" required title=\"Please add details of Notice you want to add\">");
+            out.println("<button type=\"submit\" title=\"Click to add Notice to the system\" >Add</button>");
             out.println("</form>");
             out.println("</div>");
 
             out.println("<div style=\"text-align:center; margin-top:20px;\">");
-            out.println("<a href=\"/NoticeMenuWeb\"><button class=\"leave-button\">Leave</button></a>");
+            out.println("<a href=\"/NoticeMenuWeb\"><button class=\"leave-button\" title=\"Click to go back to login page\" >Leave</button></a>");
             out.println("</div>");
 
             out.println("</body>");
@@ -202,7 +217,7 @@ public class DisplayNoticeServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Servlet that displays and manages notices with support for editing and tracking user visits.";
     }// </editor-fold>
 
 }

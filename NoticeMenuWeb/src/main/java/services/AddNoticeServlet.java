@@ -13,29 +13,45 @@ import java.util.logging.Logger;
 import model.*;
 
 /**
- *
- * @author micha
+ * AddNoticeServlet is responsible for handling requests to add new notices to
+ * the shared NoticeList. It processes both GET and POST requests, extracts the
+ * notice details from the request, and adds the notice to the list.
+ * 
+ * @author Michal Walus
+ * @version 1.0
  */
 @WebServlet(name = "AddNoticeServlet", urlPatterns = {"/AddNoticeServlet"})
 public class AddNoticeServlet extends HttpServlet {
 
     
+    /**
+     * The shared instance of NoticeList used to store notices.
+     */
     private NoticeList notices;
+
+    /**
+     * The author of the notice, retrieved from the current user session.
+     */
     private String author;
     
+    /**
+     * Initializes the servlet and retrieves the shared NoticeList instance.
+     */
     @Override
     public void init() {
         notices = SingletonModel.getInstanceNotice();
     }
     
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP GET and POST methods. Extracts notice
+     * details (title, author, type, and text) from the request, and adds a new
+     * notice to the shared list if all required parameters are provided. If an
+     * error occurs during the addition, an error page is displayed.
      *
-     * @param request servlet request
-     * @param response servlet response
+     * @param request the HTTP request containing notice details
+     * @param response the HTTP response to be sent back to the client
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an input or output error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -117,7 +133,7 @@ public class AddNoticeServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Handles adding notices to the shared list.";
     }// </editor-fold>
 
 }
