@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import static java.lang.System.console;
 import model.Notice;
 import model.NoticeList;
 import model.SingletonModel;
@@ -44,6 +46,15 @@ public class DisplayNoticeServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             currentUserName = SingletonModel.getInstanceUser().getName();
             int rowIndex = 0;
+            String visitCount = "1ewfwefd";
+            
+            Cookie[] cookies = request.getCookies();
+            
+            for(Cookie cookie : cookies){
+                if(cookie.getName().equals(currentUserName)){
+                    visitCount = cookie.getValue();
+                }
+            }
 
             out.println("<!DOCTYPE html>");
             out.println("<html lang=\"en\">");
@@ -74,6 +85,7 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Notices Table</h1>");
+            out.println("<h2>It's your " + visitCount + " visit on this site " + currentUserName + "!</h2>");
             out.println("<table>");
             out.println("<thead><tr><th>Title</th><th>Author</th><th>Type</th><th>Text</th><th>Action</th></tr></thead>");
             out.println("<tbody>");
@@ -96,7 +108,7 @@ public class DisplayNoticeServlet extends HttpServlet {
                 out.println("<td><input type=\"text\" name=\"text\" value=\"" + notice.getText() + "\" required></td>");
                 out.println("<td>");
 
-                if (notice.getAuthor().equals(currentUserName)) {
+                if (notice.getAuthor().equals(currentUserName) || currentUserName.equals("admin")) {
                     out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
                     out.println("<button type=\"submit\" class=\"action-button update-button\">Update</button>");
                     out.println("</form>");

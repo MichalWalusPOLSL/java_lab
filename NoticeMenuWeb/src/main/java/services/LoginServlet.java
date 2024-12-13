@@ -2,6 +2,7 @@ package pl.pols.lab.services;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,13 +40,37 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
+        
         user = SingletonModel.getInstanceUser();
         String username = request.getParameter("username");
+        Cookie[] cookies = request.getCookies();
+        int cookieValue = -1;
+        Cookie loginCookie;
 
         try{
             SingletonModel.getInstanceUser().setName(username);
-        }
-        catch (MyThrownException ex) {
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals(username)) {
+                        cookieValue = Integer.parseInt(cookie.getValue());
+                        cookie.setMaxAge(0);
+                    }
+                }
+                if(cookieValue == -1){
+                    loginCookie = new Cookie(username, "1");
+                }
+                else{
+                    cookieValue++;
+                    loginCookie = new Cookie(username, Integer.toString(cookieValue));
+                }
+                loginCookie.setPath("/");
+                response.addCookie(loginCookie);
+            }
+            else{
+                response.addCookie(new Cookie(username, "1"));
+            }
+                
+        } catch (MyThrownException ex) {
                 out.println("<!DOCTYPE html>");
                 out.println("<html>");
                 out.println("<head>");
