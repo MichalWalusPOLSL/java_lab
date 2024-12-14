@@ -13,6 +13,6 @@
  * the program to store, retrieve, and manipulate data effectively.
  * 
  * @author Michal Walus
- * @version 1.2
+ * @version 1.3
  */
 package model;
