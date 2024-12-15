@@ -53,6 +53,11 @@
             <version>${jakartaee}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.derbyclient</groupId>
+            <artifactId>derby-client</artifactId>
+            <version>10.14.2.0</version>
+        </dependency>
     </dependencies>
     
     <build>

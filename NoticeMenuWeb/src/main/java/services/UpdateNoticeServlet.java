@@ -1,5 +1,8 @@
 package services;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -8,7 +11,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import static java.lang.System.out;
-import model.*;
+import model.Type;
+import entities.*;
 
 /**
  * Servlet responsible for updating existing notices. Handles user requests to
@@ -35,24 +39,32 @@ public class UpdateNoticeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        String row = request.getParameter("rowIndex");
+
+        // Retrieve parameters from the request
+        String row = request.getParameter("rowIndex"); // This should be the id
         String title = request.getParameter("title");
-        Type type = Type.valueOf(request.getParameter("type"));
+        String typeParam = request.getParameter("type");
         String text = request.getParameter("text");
-        
+
         try (PrintWriter out = response.getWriter()) {
-            
-            if(title != null && type != null && text != null && row != null){
-                int rowIndex = Integer.parseInt(row);
-                Notice notice = SingletonModel.getInstanceNotice().getAll().get(rowIndex);
-                notice.setText(text);
-                notice.setTitle(title);
-                notice.setIdentity(new NoticeIdentity(type, notice.getAuthor()));
-                response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
-                
-            }
-            else{
+            if (title != null && typeParam != null && text != null && row != null) {
+                try {
+                    Long rowIndex = Long.parseLong(row);
+                    Type type = Type.valueOf(typeParam);
+                    updateNoticeInDatabase(rowIndex, title, type, text); // Update the notice in DB
+                    response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
+                } catch (Exception e) {
+                    out.println("<!DOCTYPE html>");
+                    out.println("<html>");
+                    out.println("<head>");
+                    out.println("<title>Error</title>");
+                    out.println("</head>");
+                    out.println("<body>");
+                    out.println("<h1>Error: " + "Failed to update Notice" + "</h1>");
+                    out.println("</body>");
+                    out.println("</html>");
+                }
+            } else {
                 out.println("<!DOCTYPE html>");
                 out.println("<html>");
                 out.println("<head>");
@@ -64,7 +76,32 @@ public class UpdateNoticeServlet extends HttpServlet {
                 out.println("</html>");
             }
         }
-        
+    }
+    
+    private void updateNoticeInDatabase(Long id, String title, Type type, String text) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my_persistence_unit");
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            Notice notice = em.find(Notice.class, id);
+            if (notice != null) {
+                notice.setTitle(title);
+                notice.getIdentity().setType(type); 
+                notice.setText(text);
+                em.merge(notice); 
+            } else {
+                throw new IllegalArgumentException("Notice with id " + id + " not found.");
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw new RuntimeException("Failed to update notice: " + e.getMessage(), e);
+        } finally {
+            em.close();
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

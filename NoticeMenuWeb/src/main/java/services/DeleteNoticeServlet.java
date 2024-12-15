@@ -1,5 +1,8 @@
 package services;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -8,7 +11,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import static java.lang.System.out;
-import model.*;
+import model.Type;
+import entities.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.MyThrownException;
+import model.SingletonModel;
 
 /**
  * DeleteNoticeServlet is responsible for handling requests to delete a notice
@@ -24,14 +32,14 @@ public class DeleteNoticeServlet extends HttpServlet {
     /**
      * The shared instance of NoticeList used to store notices.
      */
-    private NoticeList notices;
+    //private NoticeList notices;
 
     /**
      * Initializes the servlet and retrieves the shared NoticeList instance.
      */
     @Override
     public void init() {
-        notices = SingletonModel.getInstanceNotice();
+        //notices = SingletonModel.getInstanceNotice();
     }
     
     
@@ -49,40 +57,61 @@ public class DeleteNoticeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        String rowString = request.getParameter("rowIndex");
-        if(rowString != null){
-            int rowIndex = Integer.parseInt(rowString);
 
+        String rowIndexParam = request.getParameter("rowIndex"); 
+        if (rowIndexParam != null) {
             try {
-                notices.deleteOne(notices.getAll().get(rowIndex));
+                Long rowIndex = Long.parseLong(rowIndexParam); 
+                deleteNoticeById(rowIndex); 
                 response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
-            } catch (MyThrownException ex) {
+            } catch (Exception ex) {
                 out.println("<!DOCTYPE html>");
                 out.println("<html>");
                 out.println("<head>");
                 out.println("<title>Error</title>");
                 out.println("</head>");
                 out.println("<body>");
-                out.println("<h1>Error: " + ex.getMessage() + "</h1>");
+                out.println("<h1>Error: " + "Failed to delete notice" + "</h1>");
                 out.println("</body>");
                 out.println("</html>");
             }
-           
-        }
-        else {
+        } else {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Error</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Error: " + "Not enough data Error, please try again" + "</h1>");
+            out.println("<h1>Error: " + "No rowIndex, please try again." + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-
     }
+    
+    private void deleteNoticeById(Long id) throws MyThrownException {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my_persistence_unit");
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            // Find the notice by id
+            Notice noticeToDelete = em.find(Notice.class, id);
+            if (noticeToDelete != null) {
+                em.remove(noticeToDelete); // Remove the entity
+            } else {
+                throw new MyThrownException("Notice with id " + id + " not found.");
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw new MyThrownException("Failed to delete notice from database: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

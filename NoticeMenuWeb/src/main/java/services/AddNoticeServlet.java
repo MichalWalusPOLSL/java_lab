@@ -10,7 +10,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import static java.lang.System.out;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.*;
+//import model.*;
+import model.Type;
+import model.SingletonModel;
+import model.MyThrownException;
+import entities.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import model.NoticeList;
 
 /**
  * AddNoticeServlet is responsible for handling requests to add new notices to
@@ -65,21 +74,14 @@ public class AddNoticeServlet extends HttpServlet {
 
             if (title != null && author != null && type != null && text != null) {
                 
-                try {
-                    notices.addNotice(new Notice(title,author,type,text));
-                    response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
-                } catch (MyThrownException ex) {
-                    out.println("<!DOCTYPE html>");
-                    out.println("<html>");
-                    out.println("<head>");
-                    out.println("<title>Error</title>");
-                    out.println("</head>");
-                    out.println("<body>");
-                    out.println("<h1>Error: " + ex.getMessage() + "</h1>");
-                    out.println("</body>");
-                    out.println("</html>");
-                    Logger.getLogger(AddNoticeServlet.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                //notices.addNotice(new Notice(title,author,type,text));
+                
+                NoticeIdentity iden = new NoticeIdentity(type, author);
+                
+
+                persistObject(new Notice(title, iden, text));
+                
+                response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
             }
             else{
                 out.println("<!DOCTYPE html>");
@@ -94,6 +96,21 @@ public class AddNoticeServlet extends HttpServlet {
             }
 
             
+        }
+    }
+    
+    void persistObject(Object object) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my_persistence_unit");
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        try {
+            em.persist(object);
+            em.getTransaction().commit();
+        } catch (PersistenceException e) {
+            e.printStackTrace(); // replace with proper message for the client
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
         }
     }
 
