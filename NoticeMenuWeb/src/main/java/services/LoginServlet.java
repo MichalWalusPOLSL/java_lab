@@ -1,5 +1,11 @@
 package pl.pols.lab.services;
 
+import entities.AppUser;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
@@ -42,16 +48,18 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        
-        user = SingletonModel.getInstanceUser();
+
         String username = request.getParameter("username");
         Cookie[] cookies = request.getCookies();
         int cookieValue = 1;
         Cookie loginCookie = null;
 
-        try {
-            SingletonModel.getInstanceUser().setName(username);
+        try (PrintWriter out = response.getWriter()) {
+            if (username == null || username.isBlank()) {
+                throw new MyThrownException("Username cannot be empty.");
+            }
+
+            ensureUserInDatabase(username);
 
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
@@ -65,24 +73,57 @@ public class LoginServlet extends HttpServlet {
 
             loginCookie = new Cookie(username, Integer.toString(cookieValue));
             loginCookie.setPath("/");
-            loginCookie.setMaxAge(60*60);
+            loginCookie.setMaxAge(60 * 60); 
             response.addCookie(loginCookie);
+
             response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
-
         } catch (MyThrownException ex) {
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Login Error</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Error: " + ex.getMessage() + "</h1>");
-            out.println("<a href=\"/NoticeMenuWeb/\">Back to Login Page</a>");
-            out.println("</body>");
-            out.println("</html>");
-            
+            try (PrintWriter out = response.getWriter()) {
+                out.println("<!DOCTYPE html>");
+                out.println("<html>");
+                out.println("<head>");
+                out.println("<title>Login Error</title>");
+                out.println("</head>");
+                out.println("<body>");
+                out.println("<h1>Error: " + ex.getMessage() + "</h1>");
+                out.println("<a href=\"/NoticeMenuWeb/\">Back to Login Page</a>");
+                out.println("</body>");
+                out.println("</html>");
+            }
         }
+    }
 
+    /**
+     * Ensures a user with the given username exists in the database. If the
+     * user does not exist, it is created and persisted.
+     *
+     * @param username the username of the user
+     */
+    private void ensureUserInDatabase(String username) throws MyThrownException {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my_persistence_unit");
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            AppUser user;
+            try {
+                user = em.createQuery("SELECT u FROM AppUser u WHERE u.name = :name", AppUser.class)
+                        .setParameter("name", username)
+                        .getSingleResult();
+            } catch (NoResultException e) {
+                user = new AppUser();
+                user.setName(username);
+                em.persist(user);
+            }
+
+            em.getTransaction().commit();
+        } catch (PersistenceException e) {
+            em.getTransaction().rollback();
+            throw new RuntimeException("Error ensuring user in database: " + e.getMessage());
+        } finally {
+            em.close();
+        }
     }
 
     /**

@@ -95,10 +95,9 @@ public class DeleteNoticeServlet extends HttpServlet {
         try {
             em.getTransaction().begin();
 
-            // Find the notice by id
             Notice noticeToDelete = em.find(Notice.class, id);
             if (noticeToDelete != null) {
-                em.remove(noticeToDelete); // Remove the entity
+                em.remove(noticeToDelete);
             } else {
                 throw new MyThrownException("Notice with id " + id + " not found.");
             }

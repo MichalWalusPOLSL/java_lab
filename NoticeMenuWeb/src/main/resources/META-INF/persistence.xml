@@ -4,6 +4,7 @@
   <persistence-unit name="my_persistence_unit" transaction-type="RESOURCE_LOCAL">
     <non-jta-data-source>java:app/JavaDB</non-jta-data-source>
     <class>entities.Notice</class>
+    <class>entities.AppUser</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="jakarta.persistence.schema-generation.database.action" value="create"/>

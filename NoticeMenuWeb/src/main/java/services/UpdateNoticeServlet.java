@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import static java.lang.System.out;
 import model.Type;
 import entities.*;
+import jakarta.persistence.PersistenceException;
 
 /**
  * Servlet responsible for updating existing notices. Handles user requests to
@@ -40,65 +41,59 @@ public class UpdateNoticeServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        // Retrieve parameters from the request
-        String row = request.getParameter("rowIndex"); // This should be the id
+        String row = request.getParameter("rowIndex");
         String title = request.getParameter("title");
-        String typeParam = request.getParameter("type");
+        String typeString = request.getParameter("type");
         String text = request.getParameter("text");
 
         try (PrintWriter out = response.getWriter()) {
-            if (title != null && typeParam != null && text != null && row != null) {
-                try {
-                    Long rowIndex = Long.parseLong(row);
-                    Type type = Type.valueOf(typeParam);
-                    updateNoticeInDatabase(rowIndex, title, type, text); // Update the notice in DB
+            if (row != null && title != null && typeString != null && text != null) {
+                Long id = Long.parseLong(row); 
+                Type type = Type.valueOf(typeString);
+
+                if (updateNoticeInDatabase(id, title, type, text)) {
                     response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
-                } catch (Exception e) {
-                    out.println("<!DOCTYPE html>");
-                    out.println("<html>");
-                    out.println("<head>");
-                    out.println("<title>Error</title>");
-                    out.println("</head>");
-                    out.println("<body>");
-                    out.println("<h1>Error: " + "Failed to update Notice" + "</h1>");
-                    out.println("</body>");
-                    out.println("</html>");
+                } else {
+                    out.println("<h1>Error: Failed to update the notice!</h1>");
                 }
             } else {
-                out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Error</title>");
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Error: " + "Not enough data Error, please try again" + "</h1>");
-                out.println("</body>");
-                out.println("</html>");
+                out.println("<h1>Error: All fields are required!</h1>");
             }
         }
     }
-    
-    private void updateNoticeInDatabase(Long id, String title, Type type, String text) {
+
+    /**
+     * Updates a notice in the database based on its ID.
+     *
+     * @param id the ID of the notice to update
+     * @param title the new title of the notice
+     * @param type the new type of the notice
+     * @param text the new text of the notice
+     * @return true if the update was successful, false otherwise
+     */
+    boolean updateNoticeInDatabase(Long id, String title, Type type, String text) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("my_persistence_unit");
         EntityManager em = emf.createEntityManager();
-
+        em.getTransaction().begin();
         try {
-            em.getTransaction().begin();
-
-            Notice notice = em.find(Notice.class, id);
-            if (notice != null) {
-                notice.setTitle(title);
-                notice.getIdentity().setType(type); 
-                notice.setText(text);
-                em.merge(notice); 
+            Notice noticeToUpdate = em.find(Notice.class, id); 
+            if (noticeToUpdate != null) {
+                noticeToUpdate.setTitle(title); 
+                noticeToUpdate.getIdentity().setType(type);
+                noticeToUpdate.setText(text);
+                em.merge(noticeToUpdate); 
+                em.getTransaction().commit();
+                return true;
             } else {
-                throw new IllegalArgumentException("Notice with id " + id + " not found.");
+                em.getTransaction().rollback();
+                return false;
             }
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
+            e.printStackTrace(); 
             em.getTransaction().rollback();
-            throw new RuntimeException("Failed to update notice: " + e.getMessage(), e);
+            out.println("<h1>Error: " + e.getMessage() + "</h1>");
+            
+            return false;
         } finally {
             em.close();
         }

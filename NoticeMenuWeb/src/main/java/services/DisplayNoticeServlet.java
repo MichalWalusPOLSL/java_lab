@@ -114,6 +114,7 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println("<tbody>");
 
             for (Notice notice : notices) {
+                AppUser author = notice.getIdentity().getAuthor();
                 rowIndex = notice.getId();
                 out.println("<tr>");
 

@@ -19,6 +19,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceException;
+import static java.lang.System.out;
 import model.NoticeList;
 
 /**
@@ -74,11 +75,8 @@ public class AddNoticeServlet extends HttpServlet {
 
             if (title != null && author != null && type != null && text != null) {
                 
-                //notices.addNotice(new Notice(title,author,type,text));
-                
                 NoticeIdentity iden = new NoticeIdentity(type, author);
                 
-
                 persistObject(new Notice(title, iden, text));
                 
                 response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
@@ -107,8 +105,9 @@ public class AddNoticeServlet extends HttpServlet {
             em.persist(object);
             em.getTransaction().commit();
         } catch (PersistenceException e) {
-            e.printStackTrace(); // replace with proper message for the client
+            e.printStackTrace(); 
             em.getTransaction().rollback();
+            out.println("<h1>Error: " + e.getMessage() + "</h1>");
         } finally {
             em.close();
         }
