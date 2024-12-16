@@ -65,6 +65,7 @@ public class LoginServlet extends HttpServlet {
 
             loginCookie = new Cookie(username, Integer.toString(cookieValue));
             loginCookie.setPath("/");
+            loginCookie.setMaxAge(60*60);
             response.addCookie(loginCookie);
             response.sendRedirect(request.getContextPath() + "/DisplayNoticeServlet");
 
