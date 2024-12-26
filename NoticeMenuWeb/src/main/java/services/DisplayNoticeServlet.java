@@ -9,10 +9,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import static java.lang.System.console;
-import model.Notice;
-import model.NoticeList;
-import model.SingletonModel;
+import entities.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.List;
 import model.Type;
 
 /**
@@ -20,27 +22,36 @@ import model.Type;
  * interactions. Includes options for updating, deleting, and adding notices,
  * with tooltips for guidance. It also tracks user visits using cookies.
  *
+ * This servlet processes both GET and POST requests. It retrieves notices from
+ * the database and displays them in a table with options to edit or delete.
+ * Users can also add new notices through a form. The servlet tracks the user's
+ * visit count using cookies and provides contextual tooltips for better
+ * usability.
+ *
  * @author Michal Walus
- * @version 1.0
+ * @version 1.1
  */
 @WebServlet(name = "DisplayNoticeServlet", urlPatterns = {"/DisplayNoticeServlet"})
 public class DisplayNoticeServlet extends HttpServlet {
 
     /**
-     * The shared instance of NoticeList used to store notices.
+     * The current user interacting with the system, retrieved from the shared
+     * context.
      */
-    private NoticeList notices;
+    private AppUser author;
+            
     /**
-     * The username of person currently using the system.
+     * The shared ServletContext for accessing application-wide resources.
      */
-    private String currentUserName;
+    private ServletContext context;
+    
     
     /**
-     * Initializes the servlet by loading the shared NoticeList instance.
+     * Initializes the servlet by loading the shared ServletContext.
      */
     @Override
     public void init() {
-        notices = SingletonModel.getInstanceNotice();
+        context = getServletContext();
     }
     
     /**
@@ -57,9 +68,12 @@ public class DisplayNoticeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
+        author = (AppUser) context.getAttribute("sharedUser");
+        
         try (PrintWriter out = response.getWriter()) {
-            currentUserName = SingletonModel.getInstanceUser().getName();
-            int rowIndex = 0;
+            String currentUserName = author.getName();
+            long rowIndex;
             String visitCount = "1";
             
             Cookie[] cookies = request.getCookies();
@@ -70,6 +84,8 @@ public class DisplayNoticeServlet extends HttpServlet {
                     break;
                 }
             }
+            
+            ArrayList<Notice> notices = getNotices("SELECT n FROM Notice n");
 
             out.println("<!DOCTYPE html>");
             out.println("<html lang=\"en\">");
@@ -100,20 +116,24 @@ public class DisplayNoticeServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Notices Table</h1>");
-            out.println("<h2>It's your " + visitCount + " visit on this site " + currentUserName + "!</h2>");
+            out.println("<h2>It's your " + visitCount + " visit on this site " + currentUserName + "!* </h2>");
+            out.println("<small> *This information is retrieved from cookies. If you do not consent to their use, please leave the website immediately.</small>");
             out.println("<table>");
             out.println("<thead><tr><th>Title</th><th>Author</th><th>Type</th><th>Text</th><th>Action</th></tr></thead>");
             out.println("<tbody>");
 
-            for (Notice notice : notices.getAll()) {
+            for (Notice notice : notices) {
+                AppUser author = notice.getIdentity().getAuthor();
+                rowIndex = notice.getId();
                 out.println("<tr>");
 
                 out.println("<form action=\"/NoticeMenuWeb/UpdateNoticeServlet\" method=\"POST\">");
+                out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + notice.getId() + "\">");
                 out.println("<td><input type=\"text\" name=\"title\" value=\"" + notice.getTitle() + "\" required></td>");
-                out.println("<td>" + notice.getAuthor() + "</td>");
+                out.println("<td>" + author.getName() + "</td>");
                 out.println("<td><select name=\"type\" required>");
                 for (Type currentType : Type.values()) {
-                    if (currentType == notice.getType()) {
+                    if (currentType == notice.getIdentity().getType()) {
                         out.println("<option value=\"" + currentType.name() + "\" selected>" + currentType.name() + "</option>");
                     } else {
                         out.println("<option value=\"" + currentType.name() + "\">" + currentType.name() + "</option>");
@@ -123,31 +143,25 @@ public class DisplayNoticeServlet extends HttpServlet {
                 out.println("<td><input type=\"text\" name=\"text\" value=\"" + notice.getText() + "\" required></td>");
                 out.println("<td>");
 
-                if (notice.getAuthor().equals(currentUserName) || currentUserName.equals("admin")) {
-                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                    out.println("<button type=\"submit\" class=\"action-button update-button\" title=\"Press to update this Notice\" >Update</button>");
+                if (notice.getIdentity().getAuthor().getName().equals(currentUserName) || currentUserName.equals("admin")) {
+                    out.println("<button type=\"submit\" class=\"action-button update-button\" title=\"Press to update this Notice\">Update</button>");
                     out.println("</form>");
                     out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
-                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
-                    out.println("<button type=\"submit\" class=\"action-button delete-button\" title=\"Press to delete this Notice\" >Delete</button>");
+                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + notice.getId() + "\">");
+                    out.println("<button type=\"submit\" class=\"action-button delete-button\" title=\"Press to delete this Notice\">Delete</button>");
                     out.println("</form>");
                 } else {
-                    
-                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
                     out.println("<button type=\"button\" class=\"action-button update-button disabled-button\" title=\"You're not an owner of this Notice\" disabled>Update</button>");
                     out.println("</form>");
                     out.println("<form action=\"/NoticeMenuWeb/DeleteNoticeServlet\" method=\"POST\" style=\"display:inline;\">");
-                    out.println("<input type=\"hidden\" name=\"rowIndex\" value=\"" + rowIndex + "\">");
                     out.println("<button type=\"button\" class=\"action-button delete-button disabled-button\" title=\"You're not an owner of this Notice\" disabled>Delete</button>");
                     out.println("</form>");
-                    
                 }
-
 
                 out.println("</td>");
                 out.println("</tr>");
-                rowIndex++;
             }
+
 
             out.println("</tbody>");
             out.println("</table>");
@@ -180,6 +194,27 @@ public class DisplayNoticeServlet extends HttpServlet {
         }
 
     }
+    
+    /**
+     * Retrieves a list of notices from the database based on the specified
+     * query.
+     *
+     * @param query the JPQL query to execute
+     * @return a list of Notice objects
+     */
+    ArrayList<Notice> getNotices(String query) {
+        
+        EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
+        EntityManager em = emf.createEntityManager();
+
+        List<Notice> result = em.createQuery(query, Notice.class).getResultList();
+        em.close();
+    
+        return new ArrayList<>(result);
+}
+    
+    
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

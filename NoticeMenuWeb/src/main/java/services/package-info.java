@@ -11,13 +11,14 @@
  *
  * The servlets interact with the model layer to manage notices and users,
  * ensuring a consistent application state. Each servlet is designed to
- * handle specific tasks like adding, updating, or deleting notices,
- * and they generate HTML responses or redirects accordingly.
+ * handle specific tasks like adding, updating, or deleting notices.
+ * Responses are generated as HTML pages or as HTTP redirects to other views.
  *
- * The package relies on the Singleton pattern for managing shared application data,
- * ensuring all servlets operate on the same instance of the data model.
- * 
+ * The package relies on a shared application context for managing resources
+ * like the database connection (EntityManagerFactory) and the current user.
+ * This ensures all servlets work with the same data and maintain consistency.
+ *
  * @author Michal Walus
- * @version 1.0
+ * @version 1.2
  */
 package services;
