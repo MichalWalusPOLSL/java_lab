@@ -2,52 +2,51 @@ package services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import static java.lang.System.out;
-import model.Type;
 import entities.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import jakarta.servlet.ServletContext;
 import model.MyThrownException;
-import model.SingletonModel;
 
 /**
- * DeleteNoticeServlet is responsible for handling requests to delete a notice
- * from the shared NoticeList. The servlet identifies the notice to delete based
- * on the provided row index parameter.
+ * DeleteNoticeServlet is responsible for handling requests to delete a notice.
+ * It identifies the notice to delete based on the provided row index parameter
+ * in the request. If the notice exists, it is removed from the database. If the
+ * notice cannot be found or another error occurs, an error message is displayed
+ * to the user.
  * 
  * @author Michal Walus
- * @version 1.0
+ * @version 1.1
  */
 @WebServlet(name = "DeleteNoticeServlet", urlPatterns = {"/DeleteNoticeServlet"})
 public class DeleteNoticeServlet extends HttpServlet {
     
     /**
-     * The shared instance of NoticeList used to store notices.
+     * The shared ServletContext for accessing application-wide resources.
      */
-    //private NoticeList notices;
+    private ServletContext context;
 
     /**
-     * Initializes the servlet and retrieves the shared NoticeList instance.
+     * Initializes the servlet and retrieves the shared ServletContext.
      */
     @Override
     public void init() {
-        //notices = SingletonModel.getInstanceNotice();
+        context = getServletContext();
     }
     
     
     /**
-     * Processes requests for both HTTP GET and POST methods. Extracts the row
-     * index of the notice to delete from the request and removes the
-     * corresponding notice from the shared list. If an error occurs, an error
-     * page is displayed.
+     * Processes requests for both HTTP GET and POST methods.
+     *
+     * This method extracts the row index of the notice to delete from the
+     * request parameters. It calls the deleteNoticeById method to remove the
+     * specified notice from the database. If the row index is missing or an
+     * error occurs during deletion, an error page is displayed.
      *
      * @param request the HTTP request containing the row index parameter
      * @param response the HTTP response to be sent back to the client
@@ -88,8 +87,20 @@ public class DeleteNoticeServlet extends HttpServlet {
         }
     }
     
+    /**
+     * Deletes a notice from the database by its ID.
+     *
+     * This method uses the EntityManagerFactory to create an EntityManager and
+     * attempts to find and remove the notice with the specified ID. If the
+     * notice cannot be found, or another error occurs, an exception is thrown.
+     *
+     * @param id the ID of the notice to delete
+     * @throws MyThrownException if the notice cannot be found or an error
+     * occurs during deletion
+     */
     private void deleteNoticeById(Long id) throws MyThrownException {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my_persistence_unit");
+        
+        EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
         EntityManager em = emf.createEntityManager();
 
         try {
